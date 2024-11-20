@@ -1,15 +1,14 @@
 from pydantic import BaseModel
 
 
-class TaskCreate(BaseModel):
-    code_name: str
-    creator_id: int
+class WorkLogCreate(BaseModel):
     assignee_id: int
-    status: str
+    task_id: int
+    description: str
     time_spent: int
 
 
-class TaskResponse(TaskCreate):
+class WorkLogResponse(WorkLogCreate):
     id: int
 
     class Config:
