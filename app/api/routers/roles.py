@@ -3,7 +3,7 @@ from app.database import Database
 from app.schemas.users import Role
 import os
 
-router = APIRouter(tags=["Roles endpoints"])
+router = APIRouter(tags=["Roles endpoints"], prefix="/api")
 
 db = Database('localhost', 'root',
               os.environ['MARIADB_ROOT_PWD'], 'task_management')

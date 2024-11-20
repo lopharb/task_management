@@ -3,7 +3,7 @@ from app.database import Database
 from app.schemas.tasks import WorkLog
 import os
 
-router = APIRouter(tags=["Worklogs endpoints"])
+router = APIRouter(tags=["Worklogs endpoints"], prefix="/api")
 
 db = Database('localhost', 'root',
               os.environ['MARIADB_ROOT_PWD'], 'task_management')

@@ -3,7 +3,7 @@ from app.database import Database
 from app.schemas.tasks import Task
 import os
 
-router = APIRouter(tags=["Tasks endpoints"])
+router = APIRouter(tags=["Tasks endpoints"], prefix="/api")
 
 db = Database('localhost', 'root',
               os.environ['MARIADB_ROOT_PWD'], 'task_management')
