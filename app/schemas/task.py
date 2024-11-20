@@ -1,9 +1,6 @@
 from sqlalchemy import ForeignKey, Column, Integer, String
-from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
-
-Base = declarative_base()
-
+from app.schemas.base import Base
 
 class Task(Base):
     __tablename__ = 'tasks'
@@ -27,10 +24,12 @@ class TaskDependency(Base):
     task_id = Column(Integer, ForeignKey('tasks.id'), primary_key=True)
     dependent_task_id = Column(
         Integer, ForeignKey('tasks.id'), primary_key=True)
+    task = relationship('Task', foreign_keys=[task_id], backref='parent_tasks')
+    dependent_task = relationship('Task', foreign_keys=[
+                                  dependent_task_id], backref='dependent_on')
 
     def __repr__(self):
         return f"TaskDependency(task_id={self.task_id}, dependent_task_id={self.dependent_task_id})"
-
 
 class WorkLog(Base):
     __tablename__ = 'work_logs'

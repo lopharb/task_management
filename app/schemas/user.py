@@ -1,8 +1,6 @@
 from sqlalchemy import ForeignKey, Column, Integer, String
-from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
-
-Base = declarative_base()
+from app.schemas.base import Base
 
 class Role(Base):
     __tablename__ = 'roles'
@@ -27,6 +25,7 @@ class User(Base):
     role = relationship('Role', backref='users')
     company_id = Column(Integer, ForeignKey('companies.id'))
     company = relationship('Company', backref='employees')
+    email = Column(String(50))
 
     def __repr__(self):
         return f"User(id={self.id}, name='{self.name}', role_id={self.role_id})"
