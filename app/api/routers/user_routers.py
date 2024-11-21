@@ -1,30 +1,11 @@
-from app.model.base import Base
 from app.model.user import User
-import os
-from sqlalchemy.orm import sessionmaker
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.schemas.user import UserResponse, UserCreate
 from typing import List
-from sqlalchemy import create_engine
+from app.utils.db_utils import get_db
 
 router = APIRouter(tags=["Users"], prefix="/api")
-
-
-PASSWORD = os.environ.get("MARIADB_ROOT_PWD")
-DATABASE_URL = f'mariadb+mariadbconnector://root:{PASSWORD}@localhost:3306/TM_alchemy'
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base.metadata.create_all(bind=engine)
-
-
-# Dependency to get DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.post("/users/", response_model=UserResponse)

@@ -2,28 +2,11 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.schemas.task import TaskResponse, TaskCreate
 from typing import List
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-import os
-from app.model.base import Base
 from app.model.task import Task
+from app.utils.db_utils import get_db
+
 
 router = APIRouter(tags=["Tasks"], prefix="/api")
-
-
-PASSWORD = os.environ.get("MARIADB_ROOT_PWD")
-DATABASE_URL = f'mariadb+mariadbconnector://root:{PASSWORD}@localhost:3306/TM_alchemy'
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base.metadata.create_all(bind=engine)
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 @router.post("/tasks/", response_model=TaskResponse)
 def create_task(task: TaskCreate, db: Session = Depends(get_db)):

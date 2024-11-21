@@ -1,31 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from app.model.base import Base
 from app.schemas.role import RoleResponse, RoleCreate
 from typing import List
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-import os
-from app.model.base import Base
 from app.model.user import Role
+from app.utils.db_utils import get_db
 
 router = APIRouter(tags=["Roles"], prefix="/api")
-
-
-PASSWORD = os.environ.get("MARIADB_ROOT_PWD")
-DATABASE_URL = f'mariadb+mariadbconnector://root:{PASSWORD}@localhost:3306/TM_alchemy'
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base.metadata.create_all(bind=engine)
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 @router.post("/roles/", response_model=RoleResponse)
 def create_role(role: RoleCreate, db: Session = Depends(get_db)):
