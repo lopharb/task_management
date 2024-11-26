@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>User Profile</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				padding: 20px;
+			}
+			h1 {
+				color: #333;
+			}
+			.container {
+				display: flex;
+				flex-direction: column;
+				gap: 20px;
+			}
+			.section {
+				border: 1px solid #ddd;
+				padding: 15px;
+				border-radius: 8px;
+			}
+			.section h2 {
+				margin-top: 0;
+			}
+			.task-list {
+				list-style-type: none;
+				padding: 0;
+			}
+			.task-list li {
+				background-color: #f9f9f9;
+				padding: 10px;
+				margin: 5px 0;
+				border-radius: 5px;
+			}
+			.task-list li.done {
+				background-color: #d4edda;
+			}
+			.task-list li.to-do {
+				background-color: #fff3cd;
+			}
+			.loading {
+				font-size: 18px;
+				color: #888;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>User Profile</h1>
+		<div id="profile" class="container"></div>
+
+		<script src="fetch_profile.js"></script>
+		<!-- Link to the external JS file -->
+	</body>
+</html>
