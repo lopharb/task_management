@@ -2,6 +2,7 @@ from sqlalchemy import ForeignKey, Column, Integer, String
 from sqlalchemy.orm import relationship
 from app.model.base import Base
 
+
 class Task(Base):
     __tablename__ = 'tasks'
     id = Column(Integer, primary_key=True)
@@ -30,6 +31,7 @@ class TaskDependency(Base):
 
     def __repr__(self):
         return f"TaskDependency(task_id={self.task_id}, dependent_task_id={self.dependent_task_id})"
+
 
 class WorkLog(Base):
     __tablename__ = 'work_logs'

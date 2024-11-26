@@ -1,15 +1,28 @@
 from app.model.user import User
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from app.schemas.user import UserResponse, UserCreate
+from app.schemas.user import UserResponse, UserCreate, UserLogin
 from typing import List
 from app.utils.db_utils import get_db
-
+from app.utils.user_handler import UserHandler
 router = APIRouter(tags=["Users"], prefix="/api")
+
+
+@router.get("/profile/{user_id}")
+def read_profile(user_id: int, db: Session = Depends(get_db)):
+    return UserHandler.fetch_profile(db, user_id)
+
+
+@router.post("/login/")
+def login(user: UserLogin, db: Session = Depends(get_db)):
+    return {'user_id': UserHandler.login(db, user.email, user.password)}
+
+###########################################
 
 
 @router.post("/users/", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    user.password_hash = UserHandler._sha256(user.password_hash)
     db_user = User(**user.dict())
     db.add(db_user)
     db.commit()

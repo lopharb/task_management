@@ -6,10 +6,20 @@ class UserCreate(BaseModel):
     role_id: int
     company_id: int
     email: str
+    password_hash: str
 
 
-class UserResponse(UserCreate):
+class UserResponse(BaseModel):
     id: int
+    email: str
+    name: str
+    role_id: int
+    company_id: int
 
     class Config:
         orm_mode = True
+
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
