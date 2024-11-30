@@ -3,7 +3,7 @@ from app.schemas.user import UserCreate, UserResponse
 import hashlib
 from app.model.user import User
 from app.model.task import Task
-from typing import Optional
+from typing import List, Optional
 
 
 class UserHandler:
@@ -30,6 +30,10 @@ class UserHandler:
         return response
 
     @staticmethod
+    def get_all(db) -> List[UserResponse]:
+        return db.query(User).all()
+
+    @staticmethod
     def login(db, email, password) -> Optional[int]:
         user = db.query(User).filter(User.email == email).first()
         if user is None:
@@ -40,12 +44,42 @@ class UserHandler:
 
     @staticmethod
     def register(db, user: UserCreate) -> Column[int]:
+        existing_user = db.query(User).filter(User.email == user.email).first()
+        if existing_user is not None:
+            raise ValueError("This email is already used")
+
         user.password_hash = UserHandler._sha256(user.password_hash)
         db_user = User(**user.model_dump())
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
         return db_user.id
+
+    @staticmethod
+    def update(db, user_id, user: UserCreate) -> Column[int]:
+        db_user = db.query(User).filter(User.id == user_id).first()
+        if db_user is None:
+            raise ValueError("User not found")
+
+        if user.email != db_user.email:
+            existing_user = db.query(User).filter(
+                User.email == user.email).first()
+            if existing_user is not None:
+                raise ValueError("This email is already used")
+
+        for key, value in user.model_dump().items():
+            setattr(db_user, key, value)
+        db.commit()
+        db.refresh(db_user)
+        return db_user.id
+
+    @staticmethod
+    def delete(db, user_id):
+        db_user = db.query(User).filter(User.id == user_id).first()
+        if db_user is None:
+            raise ValueError("User not found")
+        db.delete(db_user)
+        db.commit()
 
     @staticmethod
     def _sha256(input_string: str) -> str:
