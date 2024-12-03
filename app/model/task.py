@@ -14,7 +14,7 @@ class Task(Base):
     assignee = relationship('User', foreign_keys=[
                             assignee_id], backref='assigned_tasks')
     status = Column(String(50))
-    time_spent = Column(Integer)
+    description = Column(String(256))
 
     def __repr__(self):
         return f"Task(id={self.id}, code_name='{self.code_name}', creator_id={self.creator_id}, assignee_id={self.assignee_id}, status='{self.status}', time_spent={self.time_spent})"
@@ -41,7 +41,7 @@ class WorkLog(Base):
                             assignee_id], backref='work_logs')
     task_id = Column(Integer, ForeignKey('tasks.id'))
     task = relationship('Task', backref='work_logs')
-    description = Column(String(50))
+    description = Column(String(256))
     time_spent = Column(Integer)
 
     def __repr__(self):

@@ -3,13 +3,13 @@ from app.schemas.user import UserCreate, UserResponse
 import hashlib
 from app.model.user import User
 from app.model.task import Task
-from typing import List, Optional
+from typing import Any, List, Optional
 
 
 class UserHandler:
 
     @staticmethod
-    def fetch_profile(db, user_id):
+    def fetch_profile(db, user_id) -> dict[str, Any]:
         response = {
             'user': {},
             'tasks': [],
@@ -17,6 +17,8 @@ class UserHandler:
             'role': ""
         }
         fetched_user = db.query(User).filter(User.id == user_id).first()
+        if fetched_user is None:
+            raise ValueError("User not found")
         response['user'] = {'name': fetched_user.name,
                             'email': fetched_user.email}
         response['company'] = fetched_user.company
@@ -37,13 +39,13 @@ class UserHandler:
     def login(db, email, password) -> Optional[int]:
         user = db.query(User).filter(User.email == email).first()
         if user is None:
-            return None
+            raise ValueError("User not found")
         if not UserHandler._sha256_decode(user.password_hash, password):
-            return None
+            raise ValueError("Wrong password")
         return user.id
 
     @staticmethod
-    def register(db, user: UserCreate) -> Column[int]:
+    def register(db, user: UserCreate) -> int:
         existing_user = db.query(User).filter(User.email == user.email).first()
         if existing_user is not None:
             raise ValueError("This email is already used")
@@ -51,8 +53,12 @@ class UserHandler:
         user.password_hash = UserHandler._sha256(user.password_hash)
         db_user = User(**user.model_dump())
         db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
+        try:
+            db.commit()
+            db.refresh(db_user)
+        except Exception as e:
+            db.rollback()
+            raise e
         return db_user.id
 
     @staticmethod
@@ -69,8 +75,12 @@ class UserHandler:
 
         for key, value in user.model_dump().items():
             setattr(db_user, key, value)
-        db.commit()
-        db.refresh(db_user)
+        try:
+            db.commit()
+            db.refresh(db_user)
+        except Exception as e:
+            db.rollback()
+            raise e
         return db_user.id
 
     @staticmethod
@@ -78,8 +88,12 @@ class UserHandler:
         db_user = db.query(User).filter(User.id == user_id).first()
         if db_user is None:
             raise ValueError("User not found")
-        db.delete(db_user)
-        db.commit()
+        try:
+            db.delete(db_user)
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            raise e
 
     @staticmethod
     def _sha256(input_string: str) -> str:

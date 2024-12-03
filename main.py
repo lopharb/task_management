@@ -11,16 +11,16 @@ app.include_router(company_routers.router)
 app.include_router(worklog_routers.router)
 
 origins = [
-    "http://localhost:3000",  # Frontend running on localhost:3000
-    "http://127.0.0.1:8000",  # Allow the same backend server if needed
+    "http://localhost:8080",
+    "http://127.0.0.1:8000",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Allow the list of origins
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 if __name__ == "__main__":
