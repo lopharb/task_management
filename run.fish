@@ -4,7 +4,7 @@
 function stop_servers
     echo "Stopping uvicorn server..."
     kill $uvicorn_pid
-    echo "Stopping Python HTTP server..."
+    echo "Stopping Vue.js server..."
     kill $http_server_pid
 end
 
@@ -17,13 +17,12 @@ uvicorn main:app --host 127.0.0.1 --port 8000 &
 set uvicorn_pid $last_pid
 
 # Navigate to the frontend directory and start the Python HTTP server in the background
-echo "Starting Python HTTP server in frontend directory..."
-cd app/frontend
-python3 -m http.server 3000 &
+echo "Starting Vue.js server..."
+cd app/frontend/tm_frontend
+npm run serve
 set http_server_pid $last_pid
+cd ../../..
 
 # Wait for both servers to finish (or keep the script running)
 wait $uvicorn_pid
 wait $http_server_pid
-
-cd ../..

@@ -26,6 +26,7 @@ class TaskHandler:
             return None
 
         task_info = TaskResponseComplex(
+            assignee_id=task.assignee_id,
             code_name=task.code_name,
             description=task.description,
             status=task.status,
