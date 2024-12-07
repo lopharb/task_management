@@ -1,7 +1,7 @@
 from sqlalchemy import Column
 from app.schemas.user import UserCreate, UserResponse
 import hashlib
-from app.model.user import User
+from app.model.user import User, Role
 from app.model.task import Task
 from typing import Any, List, Optional
 
@@ -46,6 +46,18 @@ class UserHandler:
 
     @staticmethod
     def register(db, user: UserCreate) -> int:
+        # bad and complex
+        if isinstance(user.role_id, str):
+            role_db = db.query(Role).filter(
+                Role.role_name == user.role_id.lower()).first()
+            if role_db is None:
+                new_role = Role(role_name=user.role_id.lower())
+                db.add(new_role)
+                db.commit()
+                db.refresh(new_role)
+                role_db = new_role
+            user.role_id = role_db.id
+
         existing_user = db.query(User).filter(User.email == user.email).first()
         if existing_user is not None:
             raise ValueError("This email is already used")

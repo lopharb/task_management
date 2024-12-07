@@ -19,9 +19,9 @@ def read_user_tasks(user_id: int, db: Session = Depends(get_db)):
     return TaskHandler.get_users_tasks(db, user_id)
 
 
-@router.get("/tasks/", response_model=List[TaskResponse])
-def read_tasks(company_id: int, db: Session = Depends(get_db)):
-    tasks = TaskHandler.get_company_tasks(db, company_id)
+@router.get("/tasks/", response_model=List[TaskResponseComplex])
+def read_tasks(db: Session = Depends(get_db)):
+    tasks = TaskHandler.get_company_tasks(db)
     return tasks
 
 

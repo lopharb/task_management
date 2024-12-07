@@ -1,9 +1,10 @@
 from pydantic import BaseModel
+from typing import Union
 
 
 class UserCreate(BaseModel):
     name: str
-    role_id: int
+    role_id: Union[int, str]
     company_id: int
     email: str
     password_hash: str

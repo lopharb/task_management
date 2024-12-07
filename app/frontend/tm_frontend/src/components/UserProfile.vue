@@ -11,7 +11,9 @@
 		<h3>Assigned Tasks</h3>
 		<ul class="task-list">
 			<li v-for="task in tasks" :key="task.id" class="task-item">
-				<div class="task-code-name">{{ task.code_name }}</div>
+				<div class="task-code-name">
+					<a :href="`/tasks?task_id=${task.id}`">{{ task.code_name }}</a>
+				</div>
 				<div class="task-status">{{ task.status }}</div>
 			</li>
 		</ul>

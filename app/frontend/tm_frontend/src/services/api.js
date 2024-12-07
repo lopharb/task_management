@@ -28,4 +28,50 @@ export const fetchProfile = async (user_id) => {
 	}
 };
 
-// Other API functions can be added here
+export const fetchAllTasks = async () => {
+	try {
+		const response = await api.get("/tasks"); // Adjust the endpoint as needed
+		return response.data;
+	} catch (error) {
+		console.error("Error fetching tasks:", error);
+		throw error; // Rethrow to handle it in the component
+	}
+};
+
+export const login = async (email, password) => {
+	try {
+		const response = await api.post("/login", { email, password });
+		return response.data;
+	} catch (error) {
+		console.error("Error logging in:", error);
+		throw error; // Rethrow to handle it in the component
+	}
+};
+
+export const register = async (name, email, password, role, companyId) => {
+	try {
+		let contents = {
+			name: name,
+			password_hash: password, // Use 'pwd' for the password field
+			email: email,
+			role_id: role,
+			company_id: companyId, // Use 'company_id' for the company ID
+		};
+		console.log(contents);
+		const response = await api.post("/register/", contents);
+		return response.data;
+	} catch (error) {
+		console.error("Error registering:", error);
+		throw error; // Rethrow to handle it in the component
+	}
+};
+
+export const getAllCompanies = async () => {
+	try {
+		const response = await api.get("/companies");
+		return response.data;
+	} catch (error) {
+		console.error("Error fetching companies:", error);
+		throw error;
+	}
+};

@@ -10,7 +10,7 @@ from app.schemas.worklog import WorkLogCreate
 class TaskHandler:
 
     @staticmethod
-    def fetch_task(db: Session, task_id):
+    def fetch_task(db: Session, task_id) -> TaskResponseComplex:
         TIME_TEMPLATE = "{:02}:{:02}"
         task: Task = db.query(Task).filter(Task.id == task_id).first()
 
@@ -23,7 +23,7 @@ class TaskHandler:
         time_spent = TIME_TEMPLATE.format(
             *divmod(time_spent, 60)) if time_spent else "00:00"
         if task is None:
-            return None
+            raise ValueError("Task not found")
 
         task_info = TaskResponseComplex(
             assignee_id=task.assignee_id,
@@ -58,15 +58,10 @@ class TaskHandler:
                              assignee_id=task.assignee_id) for task in tasks]
 
     @staticmethod
-    def get_company_tasks(db: Session, company_id: int) -> list[TaskResponse]:
+    def get_company_tasks(db: Session) -> list[TaskResponseComplex]:
         tasks = db.query(Task).all()
 
-        return [TaskResponse(code_name=task.code_name,
-                             id=task.id,
-                             status=task.status,
-                             description=task.description,
-                             creator_id=task.creator_id,
-                             assignee_id=task.assignee_id) for task in tasks]
+        return [TaskHandler.fetch_task(db, task.id) for task in tasks]
 
     @staticmethod
     def create_task(db: Session, task: TaskCreate):
