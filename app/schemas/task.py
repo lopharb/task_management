@@ -18,6 +18,7 @@ class TaskResponse(TaskCreate):
 
 
 class TaskResponseComplex(BaseModel):
+    id: int
     code_name: str
     description: str
     status: str

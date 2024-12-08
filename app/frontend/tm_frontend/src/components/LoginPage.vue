@@ -20,6 +20,9 @@
 </template>
 
 <script>
+import { login } from "@/services/api";
+import Cookies from "js-cookie";
+
 export default {
 	name: "LoginPage",
 	data() {
@@ -30,8 +33,17 @@ export default {
 	},
 	methods: {
 		handleLogin() {
-			// Add your login logic here
-			console.log("Logging in with", this.email, this.password);
+			login(this.email, this.password)
+				.then((response) => {
+					console.log("Login successful:", response);
+					const userId = response.user_id;
+
+					Cookies.set("user_id", userId, { expires: 14 });
+					this.$router.push("/tasks/browse");
+				})
+				.catch((error) => {
+					console.error("Login failed:", error);
+				});
 		},
 	},
 };

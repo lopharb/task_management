@@ -11,6 +11,8 @@ end
 # Set up a trap to stop both servers when the script is terminated
 trap stop_servers SIGINT SIGTERM
 
+echo "Starting database server..."
+sudo systemctl start mariadb
 # Start the uvicorn server in the background
 echo "Starting uvicorn server..."
 uvicorn main:app --host 127.0.0.1 --port 8000 &

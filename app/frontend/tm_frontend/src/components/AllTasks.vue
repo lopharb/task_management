@@ -1,5 +1,8 @@
 <template>
 	<div class="task-list">
+		<header>
+			<CurrentUserFlair />
+		</header>
 		<h1 style="text-align: left">Task List</h1>
 		<div v-for="task in tasks" :key="task.code_name" class="task-item">
 			<div class="task-header" @click="toggleCollapse(task.code_name)">
@@ -27,6 +30,7 @@
 
 <script>
 import { fetchAllTasks } from "@/services/api";
+import CurrentUserFlair from "./CurrentUserFlair.vue";
 export default {
 	name: "TaskList",
 	data() {
@@ -34,6 +38,9 @@ export default {
 			tasks: [],
 			collapsedTasks: {},
 		};
+	},
+	components: {
+		CurrentUserFlair, // Register the component here
 	},
 	methods: {
 		toggleCollapse(taskCodeName) {

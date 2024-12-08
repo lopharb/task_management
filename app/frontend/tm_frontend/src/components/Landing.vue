@@ -7,7 +7,7 @@
 				efficiently, just like Jira and Trello.
 			</p>
 			<div class="buttons">
-				<router-link to="/login" class="btn">Login</router-link>
+				<a @click.prevent="handleLoginRedirect" class="btn">Login</a>
 				<router-link to="/register" class="btn btn-secondary"
 					>Register</router-link
 				>
@@ -17,8 +17,27 @@
 </template>
 
 <script>
+import Cookies from "js-cookie"; // Import js-cookie for cookie management
 export default {
 	name: "LandingPage",
+	methods: {
+		async handleLoginRedirect() {
+			const userId = Cookies.get("user_id"); // Retrieve the user_id from cookies
+
+			if (userId) {
+				try {
+					this.$router.push("/tasks/browse"); // Redirect to tasks page
+				} catch (error) {
+					console.error("Automatic login failed:", error);
+					// If the automatic login fails, redirect to the login page
+					this.$router.push("/login");
+				}
+			} else {
+				// If no user_id cookie, redirect to the login page
+				this.$router.push("/login");
+			}
+		},
+	},
 };
 </script>
 
@@ -62,6 +81,7 @@ p {
 	text-decoration: none;
 	border-radius: 4px;
 	transition: background-color 0.3s;
+	cursor: pointer; /* Change cursor to pointer */
 }
 
 .btn:hover {

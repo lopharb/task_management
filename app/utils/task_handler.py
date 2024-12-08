@@ -26,6 +26,7 @@ class TaskHandler:
             raise ValueError("Task not found")
 
         task_info = TaskResponseComplex(
+            id=task.id,
             assignee_id=task.assignee_id,
             code_name=task.code_name,
             description=task.description,

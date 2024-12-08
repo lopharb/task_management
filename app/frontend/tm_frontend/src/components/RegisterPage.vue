@@ -43,6 +43,7 @@
 <script>
 import { getAllCompanies } from "@/services/api";
 import { register } from "@/services/api";
+import Cookies from "js-cookie";
 
 export default {
 	name: "RegisterPage",
@@ -76,7 +77,10 @@ export default {
 			)
 				.then((response) => {
 					console.log("Registration successful:", response);
-					this.$router.push("/login");
+					const userId = response.user_id;
+
+					Cookies.set("user_id", userId, { expires: 14 });
+					this.$router.push("/tasks/browse");
 				})
 				.catch((error) => {
 					console.error("Registration failed:", error);
