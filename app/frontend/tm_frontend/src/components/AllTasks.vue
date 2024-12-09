@@ -4,8 +4,21 @@
 			<CurrentUserFlair />
 		</header>
 		<h1 style="text-align: left">Task List</h1>
-
-		<div v-for="task in tasks" :key="task.code_name" class="task-item">
+		<!-- Search Bar -->
+		<div class="search-container">
+			<input
+				type="text"
+				v-model="searchQuery"
+				placeholder="Search tasks..."
+				class="search-bar"
+			/>
+			<!-- Toggle Button for User Filter -->
+			<label class="user-filter">
+				<input type="checkbox" v-model="filterByCurrentUser" class="checkbox" />
+				<span>Show My Tasks Only</span>
+			</label>
+		</div>
+		<div v-for="task in filteredTasks" :key="task.code_name" class="task-item">
 			<div class="task-header" @click="toggleCollapse(task.code_name)">
 				<span
 					:class="{ triangle: true, collapsed: isCollapsed(task.code_name) }"
@@ -88,6 +101,7 @@ import { fetchAllTasks, updateTask, deleteTask } from "@/services/api";
 import CurrentUserFlair from "./CurrentUserFlair.vue";
 import TaskCreate from "./TaskCreate.vue";
 import TimeTracker from "./TimeTracker.vue";
+import Cookies from "js-cookie";
 
 export default {
 	name: "TaskList",
@@ -99,6 +113,8 @@ export default {
 			showTimeTracker: false,
 			showTimeTrackerOverlay: false,
 			currentTask: null,
+			searchQuery: "",
+			filterByCurrentUser: false,
 		};
 	},
 	components: {
@@ -106,6 +122,22 @@ export default {
 		TaskCreate,
 		TimeTracker,
 	},
+	computed: {
+		filteredTasks() {
+			const query = this.searchQuery.toLowerCase();
+			return this.tasks.filter((task) => {
+				const matchesSearch =
+					task.code_name.toLowerCase().includes(query) ||
+					task.description.toLowerCase().includes(query);
+				const matchesUser =
+					!this.filterByCurrentUser ||
+					task.assignee_id == Cookies.get("user_id");
+
+				return matchesSearch && matchesUser;
+			});
+		},
+	},
+
 	methods: {
 		openTimeTracker(task) {
 			this.currentTask = task;
@@ -205,7 +237,7 @@ export default {
 
 <style scoped>
 .task-list {
-	max-width: 800px;
+	max-width: 1000px;
 	margin: 0 auto;
 }
 
@@ -404,5 +436,36 @@ a {
 
 .btn-delete:hover .trashcan-icon {
 	transform: rotateY(180deg);
+}
+
+.search-bar {
+	width: 60%;
+	padding: 10px;
+	margin-bottom: 15px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 16px;
+}
+.search-container {
+	display: flex;
+	align-items: center;
+	margin-bottom: 15px;
+}
+
+.user-filter {
+	margin-left: 15px;
+	display: flex;
+	align-items: center;
+}
+
+.checkbox {
+	margin-right: 5px;
+	transform: scale(1.2);
+	cursor: pointer;
+}
+
+.user-filter span {
+	font-size: 14px;
+	color: #333;
 }
 </style>
