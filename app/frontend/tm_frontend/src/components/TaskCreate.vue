@@ -1,14 +1,19 @@
 <template>
 	<div class="task-create">
-		<h2>Create a New Task</h2>
+		<h2>{{ mode === "edit" ? "Edit Task" : "Create a New Task" }}</h2>
 		<form @submit.prevent="submitTask">
 			<div class="form-group">
 				<label for="code_name">Code Name:</label>
-				<input type="text" id="code_name" v-model="task.code_name" required />
+				<input
+					type="text"
+					id="code_name"
+					v-model="taskData.code_name"
+					required
+				/>
 			</div>
 			<div class="form-group">
 				<label for="assignee_id">Assignee:</label>
-				<select id="assignee_id" v-model="task.assignee_id" required>
+				<select id="assignee_id" v-model="taskData.assignee_id" required>
 					<option value="" disabled>Select Assignee</option>
 					<option
 						v-for="employee in employees"
@@ -19,16 +24,25 @@
 					</option>
 				</select>
 			</div>
-			<div class="form-group"></div>
 			<div class="form-group">
 				<label for="description">Description:</label>
 				<textarea
 					id="description"
-					v-model="task.description"
+					v-model="taskData.description"
 					required
 				></textarea>
 			</div>
-			<button type="submit" class="btn">Create Task</button>
+			<div class="form-group">
+				<label for="status">Status:</label>
+				<select id="status" v-model="taskData.status" required>
+					<option value="TO DO">TO DO</option>
+					<option value="IN PROGRESS">IN PROGRESS</option>
+					<option value="DONE">DONE</option>
+				</select>
+			</div>
+			<button type="submit" class="btn">
+				{{ mode === "edit" ? "Update Task" : "Create Task" }}
+			</button>
 		</form>
 		<div v-if="error" class="error">{{ error }}</div>
 		<div v-if="success" class="success">{{ success }}</div>
@@ -36,16 +50,31 @@
 </template>
 
 <script>
-import { createTask } from "@/services/api"; // Adjust the import based on your API structure
-import { getEmployees, fetchProfile } from "@/services/api";
+import {
+	createTask,
+	updateTask,
+	getEmployees,
+	fetchProfile,
+} from "@/services/api";
 import Cookies from "js-cookie";
+
 export default {
 	name: "TaskCreate",
+	props: {
+		task: {
+			type: Object,
+			default: () => null,
+		},
+		mode: {
+			type: String,
+			default: "create", // "create" or "edit"
+		},
+	},
 	data() {
 		return {
 			userId: Cookies.get("user_id"),
 			employees: [],
-			task: {
+			taskData: {
 				code_name: "",
 				creator_id: Cookies.get("user_id"),
 				assignee_id: null,
@@ -57,6 +86,12 @@ export default {
 		};
 	},
 	async created() {
+		// Pre-fill form if editing an existing task
+		if (this.task && this.mode === "edit") {
+			this.taskData = { ...this.task };
+		}
+
+		// Fetch employees
 		let company_id = null;
 		try {
 			const user = await fetchProfile(this.userId);
@@ -69,26 +104,25 @@ export default {
 	methods: {
 		async submitTask() {
 			try {
-				await createTask(this.task);
-				this.success = "Task created successfully!";
+				if (this.mode === "edit") {
+					// Update existing task
+					await updateTask(this.taskData.id, this.taskData);
+					this.success = "Task updated successfully!";
+				} else {
+					// Create new task
+					await createTask(this.taskData);
+					this.success = "Task created successfully!";
+				}
 				this.error = ""; // Clear error message
-				this.resetForm(); // Optionally reset the form after successful creation
-				await this.$emit("task-created");
+				await this.$emit("task-created"); // Notify parent to refresh tasks
 			} catch (err) {
 				this.error =
-					"Failed to create task: " +
+					"Failed to " +
+					(this.mode === "edit" ? "update" : "create") +
+					" task: " +
 					(err.response?.data?.detail || err.message);
 				this.success = ""; // Clear success message
 			}
-		},
-		resetForm() {
-			this.task = {
-				code_name: "",
-				creator_id: null,
-				assignee_id: null,
-				status: "",
-				description: "",
-			};
 		},
 	},
 };

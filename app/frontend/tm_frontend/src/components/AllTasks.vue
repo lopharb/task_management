@@ -48,6 +48,9 @@
 						class="trashcan-icon"
 					/>
 				</button>
+				<button class="btn-edit" @click.stop="editTask(task)">
+					<img src="@/assets/pencil.png" alt="Edit Task" class="pencil-icon" />
+				</button>
 			</div>
 			<div v-if="isCollapsed(task.code_name)" class="task-details">
 				<p style="text-align: left">{{ task.description }}</p>
@@ -154,10 +157,6 @@ export default {
 			this.showTaskCreate = !this.showTaskCreate;
 			this.showTimeTrackerOverlay = this.showTaskCreate || this.showTimeTracker;
 		},
-		closeTaskCreate() {
-			this.showTaskCreate = false;
-			this.showTimeTrackerOverlay = this.showTimeTracker;
-		},
 		closeAll() {
 			this.closeTimeTracker();
 			this.closeTaskCreate();
@@ -213,6 +212,16 @@ export default {
 				default:
 					return {};
 			}
+		},
+		editTask(task) {
+			this.taskToEdit = task;
+			this.showTaskCreate = true;
+		},
+
+		closeTaskCreate() {
+			this.showTaskCreate = false;
+			this.showTimeTrackerOverlay = this.showTimeTracker;
+			this.taskToEdit = null; // Reset the edit mode
 		},
 		async deleteTask(task) {
 			if (
@@ -467,5 +476,32 @@ a {
 .user-filter span {
 	font-size: 14px;
 	color: #333;
+}
+
+.btn-edit {
+	margin-left: 10px;
+	padding: 5px;
+	background-color: #007bff;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 0.3s ease;
+}
+
+.pencil-icon {
+	width: 20px;
+	height: 20px;
+	transition: transform 0.3s ease;
+}
+
+.btn-edit:hover {
+	background-color: #0056b3;
+}
+
+.btn-edit:hover .pencil-icon {
+	transform: scale(1.2);
 }
 </style>
