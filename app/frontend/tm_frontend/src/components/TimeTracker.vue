@@ -60,6 +60,7 @@ export default {
 	border-radius: 4px;
 	padding: 15px;
 	background-color: #f9f9f9;
+	width: 35%;
 }
 
 .form-group {
@@ -73,7 +74,7 @@ label {
 
 input[type="number"],
 textarea {
-	width: 100%;
+	width: 95%;
 	padding: 8px;
 	border: 1px solid #ccc;
 	border-radius: 4px;

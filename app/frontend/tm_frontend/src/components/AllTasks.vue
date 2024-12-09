@@ -21,7 +21,7 @@
 					{{ task.status }} <i class="dropdown-icon">▼</i>
 				</span>
 				<!-- Updated Track Time Button -->
-				<button class="btn-time-track" @click.stop="trackTime(task)">
+				<button class="btn-time-track" @click.stop="openTimeTracker(task)">
 					<img
 						src="@/assets/hourglass.png"
 						alt="Track Time"
@@ -48,22 +48,39 @@
 			</div>
 		</div>
 
+		<!-- Overlay for dimming effect -->
+		<div
+			v-if="showTimeTrackerOverlay || showTaskCreate"
+			class="overlay"
+			@click="closeAll"
+		></div>
+
+		<!-- Time Tracker Component -->
+		<TimeTracker
+			v-if="showTimeTracker"
+			:task="currentTask"
+			@close="closeTimeTracker"
+		/>
+
 		<!-- Toggle button for TaskCreate -->
 		<button @click="toggleTaskCreate" class="btn-toggle">
 			{{ showTaskCreate ? "Hide Task Creation" : "Create New Task" }}
 		</button>
 
-		<!-- Conditionally render TaskCreate -->
-		<div v-if="showTaskCreate">
-			<TaskCreate />
-		</div>
+		<!-- TaskCreate Component as an Overlay -->
+		<TaskCreate
+			v-if="showTaskCreate"
+			@close="closeTaskCreate"
+			class="task-create"
+		/>
 	</div>
 </template>
 
 <script>
-import { fetchAllTasks, updateTask } from "@/services/api"; // Import the updateTask function
+import { fetchAllTasks, updateTask } from "@/services/api";
 import CurrentUserFlair from "./CurrentUserFlair.vue";
 import TaskCreate from "./TaskCreate.vue";
+import TimeTracker from "./TimeTracker.vue";
 
 export default {
 	name: "TaskList",
@@ -71,14 +88,40 @@ export default {
 		return {
 			tasks: [],
 			collapsedTasks: {},
-			showTaskCreate: false, // State for toggling TaskCreate visibility
+			showTaskCreate: false,
+			showTimeTracker: false,
+			showTimeTrackerOverlay: false,
+			currentTask: null,
 		};
 	},
 	components: {
 		CurrentUserFlair,
 		TaskCreate,
+		TimeTracker,
 	},
 	methods: {
+		openTimeTracker(task) {
+			this.currentTask = task;
+			this.showTimeTracker = true;
+			this.showTimeTrackerOverlay = true;
+		},
+		closeTimeTracker() {
+			this.showTimeTracker = false;
+			this.showTimeTrackerOverlay = false;
+			this.currentTask = null;
+		},
+		toggleTaskCreate() {
+			this.showTaskCreate = !this.showTaskCreate;
+			this.showTimeTrackerOverlay = this.showTaskCreate || this.showTimeTracker;
+		},
+		closeTaskCreate() {
+			this.showTaskCreate = false;
+			this.showTimeTrackerOverlay = this.showTimeTracker;
+		},
+		closeAll() {
+			this.closeTimeTracker();
+			this.closeTaskCreate();
+		},
 		toggleCollapse(taskCodeName) {
 			this.collapsedTasks[taskCodeName] = !this.isCollapsed(taskCodeName);
 		},
@@ -89,19 +132,14 @@ export default {
 			this.tasks = await fetchAllTasks();
 			console.log(this.tasks);
 		},
-		toggleTaskCreate() {
-			this.showTaskCreate = !this.showTaskCreate; // Toggle visibility
-		},
 		toggleStatusDropdown(task) {
-			// Toggle the dropdown for the specific task
 			this.tasks.forEach((t) => {
-				if (t !== task) t.showStatusDropdown = false; // Close others
+				if (t !== task) t.showStatusDropdown = false;
 			});
 			task.showStatusDropdown = !task.showStatusDropdown;
 		},
 		async updateStatus(task, newStatus) {
 			try {
-				// Update the task status
 				const task_updated = {
 					assignee_id: task.assignee_id,
 					code_name: task.code_name,
@@ -109,33 +147,29 @@ export default {
 					description: task.description,
 					status: newStatus,
 				};
-				await updateTask(task.id, task_updated); // Make API call to update status
-				task.status = newStatus; // Update the status in the local state
-				task.showStatusDropdown = false; // Close the dropdown after selection
+				await updateTask(task.id, task_updated);
+				task.status = newStatus;
+				task.showStatusDropdown = false;
 			} catch (error) {
 				console.error("Failed to update status:", error);
 			}
-		},
-		trackTime(task) {
-			// Logic to track time for the task (to be implemented)
-			console.log(`Tracking time for task: ${task.code_name}`);
 		},
 		getStatusStyle(status) {
 			switch (status) {
 				case "TO DO":
 					return {
-						color: "#6c757d", // Grey text
-						backgroundColor: "rgba(108, 117, 125, 0.2)", // Light grey background
+						color: "#6c757d",
+						backgroundColor: "rgba(108, 117, 125, 0.2)",
 					};
 				case "IN PROGRESS":
 					return {
-						color: "#007bff", // Blue text
-						backgroundColor: "rgba(0, 123, 255, 0.2)", // Light blue background
+						color: "#007bff",
+						backgroundColor: "rgba(0, 123, 255, 0.2)",
 					};
 				case "DONE":
 					return {
-						color: "#28a745", // Green text
-						backgroundColor: "rgba(40, 167, 69, 0.2)", // Light green background
+						color: "#28a745",
+						backgroundColor: "rgba(40, 167, 69, 0.2)",
 					};
 				default:
 					return {};
@@ -172,8 +206,8 @@ export default {
 }
 
 .task-name {
-	flex-grow: 1; /* Allow name to take available space */
-	text-align: left; /* Align task name to the left */
+	flex-grow: 1;
+	text-align: left;
 }
 
 .task-header h2 {
@@ -183,33 +217,33 @@ export default {
 
 .status {
 	font-weight: bold;
-	cursor: pointer; /* Change cursor to pointer */
-	position: relative; /* For dropdown positioning */
-	padding: 5px; /* Add some padding for better appearance */
-	border-radius: 4px; /* Rounded corners for status */
+	cursor: pointer;
+	position: relative;
+	padding: 5px;
+	border-radius: 4px;
 }
 
 .btn-time-track {
-	margin-left: 10px; /* Space between status and button */
-	padding: 5px; /* Adjust for icon */
-	background-color: #28a745; /* Green color for tracking */
+	margin-left: 10px;
+	padding: 5px;
+	background-color: #28a745;
 	border: none;
 	border-radius: 4px;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition: transform 0.3s ease; /* Smooth transition for hover effect */
+	transition: transform 0.3s ease;
 }
 
 .hourglass-icon {
-	width: 20px; /* Adjust size as needed */
-	height: 20px; /* Keep aspect ratio */
-	transition: transform 0.3s ease; /* Smooth transition for the icon */
+	width: 20px;
+	height: 20px;
+	transition: transform 0.3s ease;
 }
 
 .btn-time-track:hover .hourglass-icon {
-	transform: rotateZ(180deg); /* Flip the hourglass icon */
+	transform: rotateZ(180deg);
 }
 
 .task-details {
@@ -227,18 +261,19 @@ export default {
 	height: 0;
 	margin-right: 10px;
 	vertical-align: middle;
-	border-left: 5px solid transparent;
+	border-left: 5px solid #333;
 	border-right: 5px solid transparent;
-	border-top: 5px solid #333;
+	border-bottom: 5px solid transparent;
+	border-top: 5px solid transparent;
 	transition: transform 0.3s;
 }
 
 .triangle.collapsed {
-	transform: rotate(180deg);
+	transform: rotate(90deg);
 }
 
 .btn-toggle {
-	margin: 20px 0; /* Spacing around the button */
+	margin: 20px 0;
 	padding: 10px 15px;
 	background-color: #007bff;
 	color: white;
@@ -251,24 +286,16 @@ export default {
 	background-color: #0056b3;
 }
 
-.status {
-	font-weight: bold;
-	cursor: pointer; /* Change cursor to pointer */
-	position: relative; /* For dropdown positioning */
-	padding: 5px; /* Add some padding for better appearance */
-	border-radius: 4px; /* Rounded corners for status */
-}
-
 .status-dropdown {
-	position: absolute; /* Position it absolutely */
+	position: absolute;
 	background-color: white;
 	border: 1px solid #ddd;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-	z-index: 10; /* Ensure dropdown is on top */
-	margin-top: 5px; /* Space from status */
-	width: 150px; /* Set a fixed width */
-	border-radius: 4px; /* Rounded corners for dropdown */
-	transition: all 0.2s ease; /* Smooth transition */
+	z-index: 10;
+	margin-top: 5px;
+	width: 150px;
+	border-radius: 4px;
+	transition: all 0.2s ease;
 }
 
 .status-dropdown ul {
@@ -280,18 +307,52 @@ export default {
 .status-dropdown li {
 	padding: 8px 10px;
 	cursor: pointer;
-	transition: background-color 0.2s; /* Smooth background transition */
+	transition: background-color 0.2s;
 }
 
 .status-dropdown li:hover {
-	background-color: #f0f0f0; /* Highlight on hover */
+	background-color: #f0f0f0;
 }
 
 .status-dropdown li:active {
-	background-color: #e0e0e0; /* Slightly darker on click */
+	background-color: #e0e0e0;
 }
+
 a {
 	color: #777;
 	text-decoration: none;
+}
+
+.overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 9;
+}
+
+.task-create {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+	padding: 20px; /* Add padding for better appearance */
+	z-index: 10; /* Ensure it appears above the overlay */
+	max-width: 90%; /* Responsive width */
+}
+.time-tracker {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+	z-index: 10; /* Ensure it appears above the overlay */
 }
 </style>

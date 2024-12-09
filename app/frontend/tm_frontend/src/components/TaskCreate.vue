@@ -95,7 +95,7 @@ export default {
 
 <style scoped>
 .task-create {
-	max-width: 600px;
+	width: 35%;
 	margin: 0 auto;
 	padding: 20px;
 	border-radius: 8px;
@@ -115,7 +115,7 @@ label {
 input,
 select,
 textarea {
-	width: 100%;
+	width: 95%;
 	padding: 8px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
