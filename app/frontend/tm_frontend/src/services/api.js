@@ -108,6 +108,16 @@ export const updateTask = async (task_id, task) => {
 	}
 };
 
+export const deleteTask = async (task_id) => {
+	try {
+		const response = await api.delete(`/tasks/${task_id}`);
+		return response.data;
+	} catch (error) {
+		console.error("Error deleting task:", error);
+		throw error;
+	}
+};
+
 export const trackTime = async (worklog) => {
 	try {
 		const response = await api.post(`/worklogs/`, worklog);

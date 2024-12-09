@@ -25,7 +25,8 @@ class TaskDependency(Base):
     task_id = Column(Integer, ForeignKey('tasks.id'), primary_key=True)
     dependent_task_id = Column(
         Integer, ForeignKey('tasks.id'), primary_key=True)
-    task = relationship('Task', foreign_keys=[task_id], backref='parent_tasks')
+    task = relationship('Task', foreign_keys=[
+                        task_id], backref='parent_tasks')
     dependent_task = relationship('Task', foreign_keys=[
                                   dependent_task_id], backref='dependent_on')
 

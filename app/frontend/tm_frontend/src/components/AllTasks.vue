@@ -28,6 +28,13 @@
 						class="hourglass-icon"
 					/>
 				</button>
+				<button class="btn-delete" @click.stop="deleteTask(task)">
+					<img
+						src="@/assets/trashcan.png"
+						alt="Delete Task"
+						class="trashcan-icon"
+					/>
+				</button>
 			</div>
 			<div v-if="isCollapsed(task.code_name)" class="task-details">
 				<p style="text-align: left">{{ task.description }}</p>
@@ -77,7 +84,7 @@
 </template>
 
 <script>
-import { fetchAllTasks, updateTask } from "@/services/api";
+import { fetchAllTasks, updateTask, deleteTask } from "@/services/api";
 import CurrentUserFlair from "./CurrentUserFlair.vue";
 import TaskCreate from "./TaskCreate.vue";
 import TimeTracker from "./TimeTracker.vue";
@@ -173,6 +180,20 @@ export default {
 					};
 				default:
 					return {};
+			}
+		},
+		async deleteTask(task) {
+			if (
+				confirm(`Are you sure you want to delete the task "${task.code_name}"?`)
+			) {
+				try {
+					await deleteTask(task.id);
+					this.tasks = this.tasks.filter((t) => t.id !== task.id);
+					alert("Task deleted successfully!");
+				} catch (error) {
+					console.error("Failed to delete the task:", error);
+					alert("Failed to delete the task. Please try again.");
+				}
 			}
 		},
 	},
@@ -354,5 +375,34 @@ a {
 	border-radius: 8px;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 	z-index: 10; /* Ensure it appears above the overlay */
+}
+
+.btn-delete {
+	margin-left: 10px;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	background-color: #dc3545;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 0.3s ease;
+}
+
+.trashcan-icon {
+	width: 20px;
+	height: 20px;
+	transition: transform 0.3s ease;
+}
+
+.btn-delete:hover {
+	background-color: #c82333;
+}
+
+.btn-delete:hover .trashcan-icon {
+	transform: rotateY(180deg);
 }
 </style>

@@ -105,6 +105,13 @@ class TaskHandler:
 
     @staticmethod
     def delete_task(db: Session, task_id: int):
+        # Delete all dependencies where the task is either a parent or child
+        db.query(TaskDependency).filter(
+            (TaskDependency.task_id == task_id) |
+            (TaskDependency.dependent_task_id == task_id)
+        ).delete(synchronize_session=False)
+
+        # Delete the task itself
         db_task = db.query(Task).filter(Task.id == task_id).first()
         if db_task is None:
             raise ValueError("Task not found")
