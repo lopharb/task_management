@@ -114,7 +114,8 @@ class TaskHandler:
 
     @staticmethod
     def create_worklog(db: Session, worklog: WorkLogCreate):
-        db_worklog = WorkLog(worklog.model_dump())
+        tmp = worklog.model_dump()
+        db_worklog = WorkLog(**worklog.model_dump())
         db.add(db_worklog)
         db.commit()
         db.refresh(db_worklog)

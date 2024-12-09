@@ -3,14 +3,14 @@
 		<h3>Time Tracker</h3>
 		<form @submit.prevent="submitTimeTracking">
 			<div class="form-group">
-				<label for="timeSpent">Time Spent (in hours)</label>
+				<label for="timeSpent">Time Spent (in minutes)</label>
 				<input
 					type="number"
 					id="timeSpent"
 					v-model="timeSpent"
 					required
 					min="0"
-					step="0.1"
+					step="1"
 				/>
 			</div>
 			<div class="form-group">
@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { trackTime } from "@/services/api";
+
 export default {
 	name: "TimeTracker",
 	data() {
@@ -35,16 +37,25 @@ export default {
 			worklogDescription: "",
 		};
 	},
+	props: {
+		task: {
+			type: Object,
+			required: true,
+		},
+	},
 	methods: {
 		submitTimeTracking() {
 			if (this.timeSpent) {
 				// Logic to handle time tracking submission
 				const timeEntry = {
-					timeSpent: this.timeSpent,
-					worklogDescription: this.worklogDescription,
+					time_spent: this.timeSpent,
+					description: this.worklogDescription,
+					task_id: this.task.id,
+					assignee_id: this.task.assignee_id,
 				};
 				console.log("Time Entry Submitted:", timeEntry);
 
+				trackTime(timeEntry);
 				// Reset the fields after submission
 				this.timeSpent = null;
 				this.worklogDescription = "";

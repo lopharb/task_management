@@ -341,9 +341,9 @@ a {
 	background-color: white;
 	border-radius: 8px;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-	padding: 20px; /* Add padding for better appearance */
-	z-index: 10; /* Ensure it appears above the overlay */
-	max-width: 90%; /* Responsive width */
+	padding: 20px;
+	z-index: 10;
+	max-width: 90%;
 }
 .time-tracker {
 	position: fixed;

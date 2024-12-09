@@ -107,3 +107,13 @@ export const updateTask = async (task_id, task) => {
 		throw error;
 	}
 };
+
+export const trackTime = async (worklog) => {
+	try {
+		const response = await api.post(`/worklogs/`, worklog);
+		return response.data;
+	} catch (error) {
+		console.error("Error tracking time:", error);
+		throw error;
+	}
+};
