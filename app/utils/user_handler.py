@@ -20,7 +20,8 @@ class UserHandler:
         if fetched_user is None:
             raise ValueError("User not found")
         response['user'] = {'name': fetched_user.name,
-                            'email': fetched_user.email}
+                            'email': fetched_user.email,
+                            'id': fetched_user.id}
         response['company'] = fetched_user.company
         response['role'] = fetched_user.role
 
@@ -32,7 +33,9 @@ class UserHandler:
         return response
 
     @staticmethod
-    def get_all(db) -> List[UserResponse]:
+    def get_all(db, company_id: Optional[int] = None) -> List[UserResponse]:
+        if company_id is not None:
+            return db.query(User).filter(User.company_id == company_id).all()
         return db.query(User).all()
 
     @staticmethod

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.schemas.user import UserResponse, UserCreate, UserLogin
-from typing import List
+from typing import List, Optional
 from app.utils.db_utils import get_db
 from app.utils.user_handler import UserHandler
 
@@ -24,8 +24,8 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/users/", response_model=List[UserResponse])
-def read_users(db: Session = Depends(get_db)):
-    return UserHandler.get_all(db)
+def read_users(db: Session = Depends(get_db), company_id: Optional[int] = None):
+    return UserHandler.get_all(db, company_id)
 
 
 @router.put("/users/{user_id}")

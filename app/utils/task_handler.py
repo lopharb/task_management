@@ -27,6 +27,7 @@ class TaskHandler:
 
         task_info = TaskResponseComplex(
             id=task.id,
+            creator_id=task.creator_id,
             assignee_id=task.assignee_id,
             code_name=task.code_name,
             description=task.description,

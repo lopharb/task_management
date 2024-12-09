@@ -25,7 +25,8 @@ class TaskResponseComplex(BaseModel):
     tracked_time: Optional[str]  # Time spent tracked in minutes
     assignee_id: Optional[int]    # Assignee ID
     assignee: Optional[str]       # Assignee name
-    creator: Optional[str]        # Creator name
+    creator: Optional[str]
+    creator_id: Optional[int]      # Creator name
     parent_tasks: List[dict]      # List of parent tasks as dictionaries
     child_tasks: List[dict]       # List of child tasks as dictionaries
 
