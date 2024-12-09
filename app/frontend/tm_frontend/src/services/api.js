@@ -30,7 +30,7 @@ export const fetchProfile = async (user_id) => {
 
 export const fetchAllTasks = async () => {
 	try {
-		const response = await api.get("/tasks"); // Adjust the endpoint as needed
+		const response = await api.get("/tasks?company_id=2"); // Adjust the endpoint as needed
 		return response.data;
 	} catch (error) {
 		console.error("Error fetching tasks:", error);

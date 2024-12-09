@@ -1,8 +1,9 @@
-from typing import List
+from typing import List, Optional
 from app.model.task import Task, TaskDependency, WorkLog
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
+from app.model.user import User
 from app.schemas.task import TaskCreate, TaskResponse, TaskResponseComplex
 from app.schemas.worklog import WorkLogCreate
 
@@ -60,9 +61,15 @@ class TaskHandler:
                              assignee_id=task.assignee_id) for task in tasks]
 
     @staticmethod
-    def get_company_tasks(db: Session) -> list[TaskResponseComplex]:
-        tasks = db.query(Task).all()
-
+    def get_company_tasks(db: Session, company_id: Optional[int] = None) -> list[TaskResponseComplex]:
+        tasks = []
+        if company_id:
+            tasks = db.query(Task) \
+                .join(User, Task.creator_id == User.id) \
+                .filter(User.company_id == company_id) \
+                .all()
+        else:
+            tasks = db.query(Task).all()
         return [TaskHandler.fetch_task(db, task.id) for task in tasks]
 
     @staticmethod

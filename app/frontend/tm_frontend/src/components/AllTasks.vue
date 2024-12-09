@@ -91,6 +91,7 @@
 		<TaskCreate
 			v-if="showTaskCreate"
 			@close="closeTaskCreate"
+			@task-created="fetchTasks"
 			class="task-create"
 		/>
 	</div>
@@ -169,7 +170,6 @@ export default {
 		},
 		async fetchTasks() {
 			this.tasks = await fetchAllTasks();
-			console.log(this.tasks);
 		},
 		toggleStatusDropdown(task) {
 			this.tasks.forEach((t) => {

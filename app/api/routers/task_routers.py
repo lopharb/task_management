@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.schemas.task import TaskResponse, TaskCreate, TaskResponseComplex
-from typing import List
+from typing import List, Optional
 from app.model.task import Task
 from app.utils.db_utils import get_db
 from app.utils.task_handler import TaskHandler
@@ -20,8 +20,8 @@ def read_user_tasks(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/tasks/", response_model=List[TaskResponseComplex])
-def read_tasks(db: Session = Depends(get_db)):
-    tasks = TaskHandler.get_company_tasks(db)
+def read_tasks(db: Session = Depends(get_db), company_id: Optional[int] = None):
+    tasks = TaskHandler.get_company_tasks(db, company_id)
     return tasks
 
 

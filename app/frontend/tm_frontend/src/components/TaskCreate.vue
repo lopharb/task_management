@@ -73,6 +73,7 @@ export default {
 				this.success = "Task created successfully!";
 				this.error = ""; // Clear error message
 				this.resetForm(); // Optionally reset the form after successful creation
+				await this.$emit("task-created");
 			} catch (err) {
 				this.error =
 					"Failed to create task: " +
