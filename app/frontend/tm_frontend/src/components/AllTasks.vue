@@ -48,7 +48,7 @@
 						class="trashcan-icon"
 					/>
 				</button>
-				<button class="btn-edit" @click.stop="editTask(task)">
+				<button class="btn-edit" @click.stop="openTaskEditor(task)">
 					<img src="@/assets/pencil.png" alt="Edit Task" class="pencil-icon" />
 				</button>
 			</div>
@@ -93,9 +93,10 @@
 		<!-- TaskCreate Component as an Overlay -->
 		<TaskCreate
 			v-if="showTaskCreate"
+			:task="currentTask"
+			:mode="taskMode"
 			@close="closeTaskCreate"
 			@task-created="fetchTasks"
-			class="task-create"
 		/>
 	</div>
 </template>
@@ -153,10 +154,17 @@ export default {
 			this.showTimeTrackerOverlay = false;
 			this.currentTask = null;
 		},
-		toggleTaskCreate() {
-			this.showTaskCreate = !this.showTaskCreate;
-			this.showTimeTrackerOverlay = this.showTaskCreate || this.showTimeTracker;
+		openTaskEditor(task) {
+			this.currentTask = task;
+			this.taskMode = "edit";
+			this.showTaskCreate = true;
 		},
+		toggleTaskCreate() {
+			this.currentTask = null;
+			this.taskMode = "create";
+			this.showTaskCreate = !this.showTaskCreate;
+		},
+
 		closeAll() {
 			this.closeTimeTracker();
 			this.closeTaskCreate();

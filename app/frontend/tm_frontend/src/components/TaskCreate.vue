@@ -32,14 +32,6 @@
 					required
 				></textarea>
 			</div>
-			<div class="form-group">
-				<label for="status">Status:</label>
-				<select id="status" v-model="taskData.status" required>
-					<option value="TO DO">TO DO</option>
-					<option value="IN PROGRESS">IN PROGRESS</option>
-					<option value="DONE">DONE</option>
-				</select>
-			</div>
 			<button type="submit" class="btn">
 				{{ mode === "edit" ? "Update Task" : "Create Task" }}
 			</button>
