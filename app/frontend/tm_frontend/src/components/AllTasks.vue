@@ -56,11 +56,22 @@
 				<p style="text-align: left">{{ task.description }}</p>
 
 				<h3 style="text-align: left">Child Tasks</h3>
-				<ul style="text-align: left">
-					<li v-for="child in task.child_tasks" :key="child.id">
-						{{ child.code_name }} (Status: {{ child.status }})
+
+				<ul class="task-list">
+					<li
+						v-for="child in task.child_tasks"
+						:key="child.id"
+						class="task-item"
+					>
+						<div class="child-code-name">
+							<a :href="`/tasks?task_id=${child.id}`">{{ child.code_name }}</a>
+						</div>
+						<div class="task-status" :style="getStatusStyle(child.status)">
+							{{ child.status }}
+						</div>
 					</li>
 				</ul>
+
 				<button class="btn-add-child" @click="openChildTaskCreator(task)">
 					Add Child Task
 				</button>
@@ -204,6 +215,7 @@ export default {
 				await updateTask(task.id, task_updated);
 				task.status = newStatus;
 				task.showStatusDropdown = false;
+				this.fetchTasks();
 			} catch (error) {
 				console.error("Failed to update status:", error);
 			}
