@@ -238,7 +238,6 @@ export default {
 				try {
 					await deleteTask(task.id);
 					this.tasks = this.tasks.filter((t) => t.id !== task.id);
-					alert("Task deleted successfully!");
 				} catch (error) {
 					console.error("Failed to delete the task:", error);
 					alert("Failed to delete the task. Please try again.");

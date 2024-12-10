@@ -137,3 +137,13 @@ export const getWorklogs = async (task_id) => {
 		throw error;
 	}
 };
+
+export const deleteWorklog = async (worklog_id) => {
+	try {
+		const response = await api.delete(`/worklogs/${worklog_id}`);
+		return response.data;
+	} catch (error) {
+		console.error("Error deleting worklog:", error);
+		throw error;
+	}
+};

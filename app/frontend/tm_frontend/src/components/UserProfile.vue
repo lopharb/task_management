@@ -14,7 +14,9 @@
 				<div class="task-code-name">
 					<a :href="`/tasks?task_id=${task.id}`">{{ task.code_name }}</a>
 				</div>
-				<div class="task-status">{{ task.status }}</div>
+				<div class="task-status" :style="getStatusStyle(task.status)">
+					{{ task.status }}
+				</div>
 			</li>
 		</ul>
 	</div>
@@ -35,6 +37,35 @@ export default {
 			role: "",
 			tasks: [],
 		};
+	},
+	methods: {
+		getStatusStyle(status) {
+			switch (status) {
+				case "TO DO":
+					return {
+						color: "#6c757d",
+						backgroundColor: "rgba(108, 117, 125, 0.2)",
+						borderRadius: "4px",
+						padding: "4px",
+					};
+				case "IN PROGRESS":
+					return {
+						color: "#007bff",
+						backgroundColor: "rgba(0, 123, 255, 0.2)",
+						borderRadius: "4px",
+						padding: "4px",
+					};
+				case "DONE":
+					return {
+						color: "#28a745",
+						backgroundColor: "rgba(40, 167, 69, 0.2)",
+						borderRadius: "4px",
+						padding: "4px",
+					};
+				default:
+					return {};
+			}
+		},
 	},
 	async created() {
 		try {
@@ -105,9 +136,5 @@ h3 {
 
 .task-code-name {
 	font-weight: bold;
-}
-
-.task-status {
-	color: #888;
 }
 </style>

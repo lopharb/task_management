@@ -24,3 +24,9 @@ def read_worklogs(task_id: int, db: Session = Depends(get_db)):
 def update_worklog(worklog_id: int, worklog: WorkLogCreate, db: Session = Depends(get_db)):
     db_worklog = TaskHandler.edit_worklog(db, worklog_id, worklog)
     return db_worklog
+
+
+@router.delete("/worklogs/{worklog_id}", response_model=dict)
+def delete_worklog(worklog_id: int, db: Session = Depends(get_db)):
+    TaskHandler.delete_worklog(db, worklog_id)
+    return {"message": "Worklog deleted successfully"}

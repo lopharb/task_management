@@ -31,23 +31,42 @@
 				<span>(Status: {{ child.status }})</span>
 			</li>
 		</ul>
+
 		<h3 class="worklog-title">Logged Work</h3>
-		<ul class="worklog-list">
-			<li v-for="worklog in worklogs" :key="worklog.id" class="worklog-item">
-				<div class="worklog-content">
+		<div class="worklog-list">
+			<div v-for="worklog in worklogs" :key="worklog.id" class="worklog-item">
+				<div class="worklog-time">
 					{{
-						`[${Math.floor(worklog.time_spent / 60)}:${
-							worklog.time_spent % 60
-						}] ${worklog.description} by ${worklog.assignee.name}`
+						`[${Math.floor(worklog.time_spent / 60)
+							.toString()
+							.padStart(2, "0")}:${(worklog.time_spent % 60)
+							.toString()
+							.padStart(2, "0")}]`
 					}}
 				</div>
-			</li>
-		</ul>
+				<div class="worklog-description">
+					<p>{{ worklog.description }}</p>
+				</div>
+				<p class="worklog-author">
+					by
+					<a :href="`/users?user_id=${worklog.assignee_id}`">
+						{{ worklog.assignee.name }}
+					</a>
+				</p>
+				<button class="btn-delete" @click.stop="deleteWorklogL(worklog)">
+					<img
+						src="@/assets/trashcan.png"
+						alt="Delete Task"
+						class="trashcan-icon"
+					/>
+				</button>
+			</div>
+		</div>
 	</div>
 </template>
 
 <script>
-import { getWorklogs } from "@/services/api";
+import { getWorklogs, deleteWorklog } from "@/services/api";
 
 export default {
 	name: "TaskDetail",
@@ -68,6 +87,20 @@ export default {
 		},
 		async fetchWorklogs() {
 			this.worklogs = await getWorklogs(this.task.id);
+		},
+
+		async deleteWorklogL(worklog) {
+			if (confirm(`Are you sure you want to delete the worklog?`)) {
+				try {
+					await deleteWorklog(worklog.id);
+					this.worklogs = this.worklgetStatusStyleogs.filter(
+						(t) => t.id !== worklog.id
+					);
+				} catch (error) {
+					console.error("Failed to delete the task:", error);
+					alert("Failed to delete the task. Please try again.");
+				}
+			}
 		},
 	},
 	async created() {
@@ -122,41 +155,64 @@ export default {
 }
 
 .worklog-list {
-	list-style: none;
-	padding: 0;
-	max-width: 800px; /* Limit the width for better readability */
-	margin: 0 auto; /* Center the list */
+	display: flex;
+	flex-direction: column;
 }
 
 .worklog-item {
-	background: white;
-	border: 1px solid #e0e0e0; /* Light border for separation */
-	border-radius: 8px;
 	margin-bottom: 10px;
-	padding: 15px;
-	transition: box-shadow 0.3s ease; /* Smooth shadow effect */
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+	background-color: white;
+	padding: 10px;
+	display: flex;
 }
 
-.worklog-item:hover {
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Shadow on hover */
+.worklog-time {
+	font-size: 18px;
+	margin-right: 10px;
+	flex: 0 0 50px;
 }
 
-.worklog-content {
-	color: #333; /* Dark text color for readability */
-	font-size: 16px; /* Base font size */
-	line-height: 1.5; /* Improved line height for readability */
+.worklog-description {
+	flex-grow: 1;
+	text-align: left;
 }
 
-/* Optional: Style for time spent */
-.worklog-content::before {
-	content: "[";
-	font-weight: bold;
-	color: #007bff; /* Primary color for time */
+.worklog-author {
+	margin-top: 200px;
+	color: #555;
+	font-size: 14px;
+	display: block;
+	text-align: right;
 }
 
-.worklog-content::after {
-	content: "]";
-	font-weight: bold;
-	color: #007bff; /* Primary color for time */
+.btn-delete {
+	margin-left: 10px;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	background-color: #dc3545;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 0.3s ease;
+}
+
+.trashcan-icon {
+	width: 20px;
+	height: 20px;
+	transition: transform 0.3s ease;
+}
+
+.btn-delete:hover {
+	background-color: #c82333;
+}
+
+.btn-delete:hover .trashcan-icon {
+	transform: rotateY(180deg);
 }
 </style>

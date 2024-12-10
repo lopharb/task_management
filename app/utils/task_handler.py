@@ -150,3 +150,12 @@ class TaskHandler:
     def get_worklogs(db: Session, task_id: int) -> List[WorkLog]:
         worklogs = db.query(WorkLog).filter(WorkLog.task_id == task_id).all()
         return worklogs
+
+    @staticmethod
+    def delete_worklog(db: Session, worklog_id: int):
+        db_worklog = db.query(WorkLog).filter(WorkLog.id == worklog_id).first()
+        if db_worklog is None:
+            raise ValueError("WorkLog not found")
+        db.delete(db_worklog)
+        db.commit()
+        return db_worklog
