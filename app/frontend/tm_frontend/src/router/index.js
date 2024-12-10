@@ -5,7 +5,7 @@ import AllTasks from "@/components/AllTasks.vue";
 import LoginPage from "@/components/LoginPage.vue";
 import RegisterPage from "@/components/RegisterPage.vue";
 import Landing from "@/components/Landing.vue";
-
+import AdminPanel from "@/components/AdminPanel.vue";
 const routes = [
 	{
 		path: "/",
@@ -36,6 +36,11 @@ const routes = [
 		path: "/register",
 		name: "RegisterPage",
 		component: RegisterPage,
+	},
+	{
+		path: "/administrate",
+		name: "AdminPanel",
+		component: AdminPanel,
 	},
 ];
 

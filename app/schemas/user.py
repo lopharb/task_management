@@ -10,6 +10,13 @@ class UserCreate(BaseModel):
     password_hash: str
 
 
+class UserUpdate(BaseModel):
+    name: str
+    role_id: Union[int, str]
+    company_id: int
+    email: str
+
+
 class UserResponse(BaseModel):
     id: int
     email: str

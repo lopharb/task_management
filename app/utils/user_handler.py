@@ -1,5 +1,5 @@
 from sqlalchemy import Column
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.user import UserCreate, UserResponse, UserUpdate
 import hashlib
 from app.model.user import User, Role
 from app.model.task import Task
@@ -77,7 +77,7 @@ class UserHandler:
         return db_user.id
 
     @staticmethod
-    def update(db, user_id, user: UserCreate) -> Column[int]:
+    def update(db, user_id, user: UserUpdate) -> Column[int]:
         db_user = db.query(User).filter(User.id == user_id).first()
         if db_user is None:
             raise ValueError("User not found")

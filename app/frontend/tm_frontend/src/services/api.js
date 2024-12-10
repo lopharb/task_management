@@ -159,3 +159,43 @@ export const createDependency = async (task_id, parent_id) => {
 		throw error;
 	}
 };
+
+export const getAllUsers = async () => {
+	try {
+		const response = await api.get("/users");
+		return response.data;
+	} catch (error) {
+		console.error("Error fetching users:", error);
+		throw error;
+	}
+};
+
+export const updateUser = async (user_id, user) => {
+	try {
+		const response = await api.put(`/users/${user_id}`, user);
+		return response.data;
+	} catch (error) {
+		console.error("Error updating user:", error);
+		throw error;
+	}
+};
+
+export const deleteUser = async (user_id) => {
+	try {
+		const response = await api.delete(`/users/${user_id}`);
+		return response.data;
+	} catch (error) {
+		console.error("Error deleting user:", error);
+		throw error;
+	}
+};
+
+export const getAllRoles = async () => {
+	try {
+		const response = await api.get("/roles");
+		return response.data;
+	} catch (error) {
+		console.error("Error fetching roles:", error);
+		throw error;
+	}
+};

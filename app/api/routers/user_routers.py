@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.schemas.user import UserResponse, UserCreate, UserLogin
+from app.schemas.user import UserResponse, UserCreate, UserLogin, UserUpdate
 from typing import List, Optional
 from app.utils.db_utils import get_db
 from app.utils.user_handler import UserHandler
@@ -29,7 +29,7 @@ def read_users(db: Session = Depends(get_db), company_id: Optional[int] = None):
 
 
 @router.put("/users/{user_id}")
-def update_user(user_id: int, user: UserCreate, db: Session = Depends(get_db)):
+def update_user(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
     return {"user_id": UserHandler.update(db, user_id, user)}
 
 
