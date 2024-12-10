@@ -47,9 +47,8 @@ export default {
 	padding: 10px; /* Reduce padding for a more minimal look */
 	background-color: #f9f9f9;
 	border-radius: 8px;
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 	position: absolute; /* Position it in the top right */
-	top: 10px; /* Adjust based on your layout */
+	top: 5px;
 	right: 10px; /* Adjust based on your layout */
 }
 

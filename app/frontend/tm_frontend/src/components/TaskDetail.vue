@@ -31,10 +31,24 @@
 				<span>(Status: {{ child.status }})</span>
 			</li>
 		</ul>
+		<h3 class="worklog-title">Logged Work</h3>
+		<ul class="worklog-list">
+			<li v-for="worklog in worklogs" :key="worklog.id" class="worklog-item">
+				<div class="worklog-content">
+					{{
+						`[${Math.floor(worklog.time_spent / 60)}:${
+							worklog.time_spent % 60
+						}] ${worklog.description} by ${worklog.assignee.name}`
+					}}
+				</div>
+			</li>
+		</ul>
 	</div>
 </template>
 
 <script>
+import { getWorklogs } from "@/services/api";
+
 export default {
 	name: "TaskDetail",
 	props: {
@@ -43,10 +57,21 @@ export default {
 			required: true,
 		},
 	},
+	data() {
+		return {
+			worklogs: [],
+		};
+	},
 	methods: {
 		goToTask(task) {
 			this.$router.push(`/tasks?task_id=${task.id}`);
 		},
+		async fetchWorklogs() {
+			this.worklogs = await getWorklogs(this.task.id);
+		},
+	},
+	async created() {
+		await this.fetchWorklogs();
 	},
 };
 </script>
@@ -89,5 +114,49 @@ export default {
 }
 .task-detail li:nth-child(odd) {
 	background-color: #fcfcfc;
+}
+.worklog-title {
+	font-size: 24px;
+	margin-bottom: 20px;
+	color: #333;
+}
+
+.worklog-list {
+	list-style: none;
+	padding: 0;
+	max-width: 800px; /* Limit the width for better readability */
+	margin: 0 auto; /* Center the list */
+}
+
+.worklog-item {
+	background: white;
+	border: 1px solid #e0e0e0; /* Light border for separation */
+	border-radius: 8px;
+	margin-bottom: 10px;
+	padding: 15px;
+	transition: box-shadow 0.3s ease; /* Smooth shadow effect */
+}
+
+.worklog-item:hover {
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Shadow on hover */
+}
+
+.worklog-content {
+	color: #333; /* Dark text color for readability */
+	font-size: 16px; /* Base font size */
+	line-height: 1.5; /* Improved line height for readability */
+}
+
+/* Optional: Style for time spent */
+.worklog-content::before {
+	content: "[";
+	font-weight: bold;
+	color: #007bff; /* Primary color for time */
+}
+
+.worklog-content::after {
+	content: "]";
+	font-weight: bold;
+	color: #007bff; /* Primary color for time */
 }
 </style>

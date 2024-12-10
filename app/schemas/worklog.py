@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from app.schemas.user import UserResponse
 
 
 class WorkLogCreate(BaseModel):
@@ -10,6 +11,7 @@ class WorkLogCreate(BaseModel):
 
 class WorkLogResponse(WorkLogCreate):
     id: int
+    assignee: UserResponse
 
     class Config:
         orm_mode = True

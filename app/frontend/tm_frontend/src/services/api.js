@@ -127,3 +127,13 @@ export const trackTime = async (worklog) => {
 		throw error;
 	}
 };
+
+export const getWorklogs = async (task_id) => {
+	try {
+		const response = await api.get(`/worklogs?task_id=${task_id}`);
+		return response.data;
+	} catch (error) {
+		console.error("Error fetching worklogs:", error);
+		throw error;
+	}
+};
