@@ -47,6 +47,7 @@ import {
 	updateTask,
 	getEmployees,
 	fetchProfile,
+	createDependency,
 } from "@/services/api";
 import Cookies from "js-cookie";
 
@@ -102,7 +103,10 @@ export default {
 					this.success = "Task updated successfully!";
 				} else {
 					// Create new task
-					await createTask(this.taskData);
+					const newTaskId = await createTask(this.taskData);
+					if (this.task) {
+						await createDependency(newTaskId, this.task.id);
+					}
 					this.success = "Task created successfully!";
 				}
 				this.error = ""; // Clear error message

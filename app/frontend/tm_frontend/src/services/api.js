@@ -147,3 +147,15 @@ export const deleteWorklog = async (worklog_id) => {
 		throw error;
 	}
 };
+
+export const createDependency = async (task_id, parent_id) => {
+	try {
+		const response = await api.post(
+			`/tasks/${task_id}/dependencies/${parent_id}`
+		);
+		return response.data;
+	} catch (error) {
+		console.error("Error creating dependency:", error);
+		throw error;
+	}
+};

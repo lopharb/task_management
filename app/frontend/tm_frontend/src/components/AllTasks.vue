@@ -61,6 +61,9 @@
 						{{ child.code_name }} (Status: {{ child.status }})
 					</li>
 				</ul>
+				<button class="btn-add-child" @click="openChildTaskCreator(task)">
+					Add Child Task
+				</button>
 			</div>
 			<div v-if="task.showStatusDropdown" class="status-dropdown">
 				<ul>
@@ -144,6 +147,11 @@ export default {
 	},
 
 	methods: {
+		openChildTaskCreator(task) {
+			this.currentTask = task; // Устанавливаем текущую задачу как родительскую
+			this.taskMode = "create"; // Режим создания
+			this.showTaskCreate = true; // Показываем компонент создания задачи
+		},
 		openTimeTracker(task) {
 			this.currentTask = task;
 			this.showTimeTracker = true;
@@ -237,7 +245,7 @@ export default {
 			) {
 				try {
 					await deleteTask(task.id);
-					this.tasks = this.tasks.filter((t) => t.id !== task.id);
+					this.fetchTasks();
 				} catch (error) {
 					console.error("Failed to delete the task:", error);
 					alert("Failed to delete the task. Please try again.");
@@ -510,5 +518,20 @@ a {
 
 .btn-edit:hover .pencil-icon {
 	transform: scale(1.2);
+}
+
+.btn-add-child {
+	margin-top: 10px;
+	padding: 10px;
+	background-color: #17a2b8;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+}
+
+.btn-add-child:hover {
+	background-color: #138496;
 }
 </style>
