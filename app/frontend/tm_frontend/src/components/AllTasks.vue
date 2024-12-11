@@ -116,7 +116,12 @@
 </template>
 
 <script>
-import { fetchAllTasks, updateTask, deleteTask } from "@/services/api";
+import {
+	fetchAllTasks,
+	updateTask,
+	deleteTask,
+	fetchProfile,
+} from "@/services/api";
 import CurrentUserFlair from "./CurrentUserFlair.vue";
 import TaskCreate from "./TaskCreate.vue";
 import TimeTracker from "./TimeTracker.vue";
@@ -195,7 +200,9 @@ export default {
 			return !!this.collapsedTasks[taskCodeName];
 		},
 		async fetchTasks() {
-			this.tasks = await fetchAllTasks();
+			const user = await fetchProfile(Cookies.get("user_id"));
+			let company_id = user.company.id;
+			this.tasks = await fetchAllTasks(company_id);
 		},
 		toggleStatusDropdown(task) {
 			this.tasks.forEach((t) => {

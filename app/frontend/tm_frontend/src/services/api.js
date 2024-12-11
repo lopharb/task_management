@@ -28,9 +28,9 @@ export const fetchProfile = async (user_id) => {
 	}
 };
 
-export const fetchAllTasks = async () => {
+export const fetchAllTasks = async (company_id) => {
 	try {
-		const response = await api.get("/tasks?company_id=2"); // Adjust the endpoint as needed
+		const response = await api.get(`/tasks?company_id=${company_id}`); // Adjust the endpoint as needed
 		return response.data;
 	} catch (error) {
 		console.error("Error fetching tasks:", error);
@@ -196,6 +196,38 @@ export const getAllRoles = async () => {
 		return response.data;
 	} catch (error) {
 		console.error("Error fetching roles:", error);
+		throw error;
+	}
+};
+
+export const createCompany = async (company_name) => {
+	try {
+		const response = await api.post("/companies", {
+			company_name: company_name,
+		});
+		return response.data;
+	} catch (error) {
+		console.error("Error creating company:", error);
+		throw error;
+	}
+};
+
+export const deleteCompany = async (company_id) => {
+	try {
+		const response = await api.delete(`/companies/${company_id}`);
+		return response.data;
+	} catch (error) {
+		console.error("Error deleting company:", error);
+		throw error;
+	}
+};
+
+export const updateCompany = async (company_id, company) => {
+	try {
+		const response = await api.put(`/companies/${company_id}`, company);
+		return response.data;
+	} catch (error) {
+		console.error("Error updating company:", error);
 		throw error;
 	}
 };

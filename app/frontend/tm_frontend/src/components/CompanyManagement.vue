@@ -1,31 +1,32 @@
 <template>
-	<div class="user-management">
-		<h3 class="section-title">Users</h3>
+	<div class="company-management">
+		<h3 class="section-title">Companies</h3>
 		<div class="table-wrapper">
-			<table class="user-table">
+			<table class="company-table">
 				<thead>
 					<tr>
 						<th>ID</th>
 						<th>Name</th>
-						<th>Email</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="user in users" :key="user.id">
-						<td>{{ user.id }}</td>
-						<td>{{ user.name }}</td>
-						<td>{{ user.email }}</td>
+					<tr v-for="company in companies" :key="company.id">
+						<td>{{ company.id }}</td>
+						<td>{{ company.company_name }}</td>
 						<td>
 							<div class="action-buttons">
-								<button class="btn btn-edit" @click="editUser(user)">
+								<button class="btn btn-edit" @click="editCompany(company)">
 									<img
 										src="@/assets/pencil.png"
 										alt="Edit Task"
 										class="pencil-icon"
 									/>
 								</button>
-								<button class="btn btn-delete" @click="deleteUser(user.id)">
+								<button
+									class="btn btn-delete"
+									@click="deleteCompany(company.id)"
+								>
 									<img
 										src="@/assets/trashcan.png"
 										alt="Delete Task"
@@ -38,53 +39,30 @@
 				</tbody>
 			</table>
 		</div>
+		<div class="action-wrapper">
+			<button class="btn btn-create" @click="openCompanyForm()">
+				Create New Company
+			</button>
+		</div>
 
-		<!-- User Form Modal -->
-		<div v-if="showUserForm" class="modal-overlay">
+		<!-- Company Form Modal -->
+		<div v-if="showCompanyForm" class="modal-overlay">
 			<div class="modal">
-				<h3>{{ editMode ? "Edit User" : "Create User" }}</h3>
-				<form @submit.prevent="submitUserForm" class="form">
+				<h3>{{ editMode ? "Edit Company" : "Create Company" }}</h3>
+				<form @submit.prevent="submitCompanyForm" class="form">
 					<input
 						type="text"
-						v-model="formData.name"
-						placeholder="Name"
+						v-model="formData.company_name"
+						placeholder="Company Name"
 						required
 						class="form-input"
 					/>
-					<input
-						type="email"
-						v-model="formData.email"
-						placeholder="Email"
-						required
-						class="form-input"
-					/>
-
-					<!-- Company Select -->
-					<select v-model="formData.companyId" required class="form-select">
-						<option value="" disabled>Select Company</option>
-						<option
-							v-for="company in companies"
-							:key="company.id"
-							:value="company.id"
-						>
-							{{ company.company_name }}
-						</option>
-					</select>
-
-					<!-- Role Select -->
-					<select v-model="formData.roleId" required class="form-select">
-						<option value="" disabled>Select Role</option>
-						<option v-for="role in roles" :key="role.id" :value="role.id">
-							{{ role.company_name }}
-						</option>
-					</select>
-
 					<div class="form-actions">
 						<button type="submit" class="btn btn-save">Save</button>
 						<button
-							:type="button"
+							type="button"
 							class="btn btn-cancel"
-							@click="closeUserForm()"
+							@click="closeCompanyForm()"
 						>
 							Cancel
 						</button>
@@ -97,82 +75,70 @@
 
 <script>
 import {
-	getAllUsers,
 	getAllCompanies,
-	getAllRoles,
-	updateUser,
-	deleteUser,
-} from "../services/api";
+	createCompany,
+	deleteCompany,
+	updateCompany,
+} from "@/services/api";
 
 export default {
-	name: "UserManagement",
+	name: "CompanyManagement",
 	data() {
 		return {
-			users: [],
 			companies: [],
-			roles: [],
-			showUserForm: false,
+			showCompanyForm: false,
 			editMode: false,
-			formData: {
-				id: null,
-				name: "",
-				email: "",
-				companyId: null,
-				roleId: null,
-			},
+			formData: { id: null, company_name: "" },
 		};
 	},
 	methods: {
-		async fetchUsers() {
-			this.users = await getAllUsers();
-		},
 		async fetchCompanies() {
 			this.companies = await getAllCompanies();
 		},
-		async fetchRoles() {
-			this.roles = await getAllRoles();
+		editCompany(company) {
+			this.openCompanyForm(company);
 		},
-		openUserForm(user = null) {
-			this.editMode = !!user;
-			this.formData = user
-				? { ...user }
-				: { id: null, name: "", email: "", companyId: null, roleId: null };
-			this.showUserForm = true;
+		openCompanyForm(company = null) {
+			this.editMode = !!company;
+			this.formData = company ? { ...company } : { id: null, company_name: "" };
+			this.showCompanyForm = true;
 		},
-		editUser(user) {
-			this.openUserForm(user);
+		closeCompanyForm() {
+			this.showCompanyForm = false;
 		},
-		closeUserForm() {
-			this.showUserForm = false;
+		async submitCompanyForm() {
+			console.log(this.formData);
+			if (this.editMode) {
+				await updateCompany(this.formData.id, this.formData);
+			} else {
+				await createCompany(this.formData.company_name);
+			}
+			this.fetchCompanies();
+			this.closeCompanyForm();
 		},
-		async submitUserForm() {
-			await updateUser(this.formData.id, this.formData);
-			this.fetchUsers();
-			this.closeUserForm();
-		},
-		async deleteUser(userId) {
-			if (confirm("Are you sure you want to delete this user?")) {
-				await deleteUser(userId);
-				this.fetchUsers();
+		async deleteCompany(companyId) {
+			if (confirm("Are you sure you want to delete this company?")) {
+				await deleteCompany(companyId);
+				this.fetchCompanies();
 			}
 		},
 	},
 	created() {
-		this.fetchUsers();
 		this.fetchCompanies();
-		this.fetchRoles();
 	},
 };
 </script>
 
 <style scoped>
-.user-management {
+/* General Styling */
+.company-management {
 	padding: 20px;
 	font-family: Arial, sans-serif;
 	background-color: #f9f9f9;
 	min-height: 100vh;
 }
 
+/* Section Title */
 .section-title {
 	font-size: 24px;
 	margin-bottom: 15px;
@@ -180,6 +146,7 @@ export default {
 	text-align: center;
 }
 
+/* Table Styling */
 .table-wrapper {
 	overflow-x: auto;
 	border-radius: 8px;
@@ -188,33 +155,28 @@ export default {
 	margin: 20px 0;
 }
 
-.user-table {
+.company-table {
 	width: 100%;
 	border-collapse: collapse;
 }
 
-.user-table th,
-.user-table td {
+.company-table th,
+.company-table td {
 	padding: 12px 15px;
 	text-align: left;
 }
 
-.user-table th {
+.company-table th {
 	background-color: #007bff;
 	color: white;
 }
 
-.user-table tbody tr:nth-child(odd) {
+.company-table tbody tr:nth-child(odd) {
 	background-color: #f2f2f2;
 }
 
-.user-table tbody tr:hover {
+.company-table tbody tr:hover {
 	background-color: #e8f4ff;
-}
-
-.action-buttons {
-	display: flex;
-	gap: 5px;
 }
 
 .btn {
@@ -228,11 +190,18 @@ export default {
 .btn-edit {
 	background-color: #28a745;
 	color: white;
+	margin-right: 5px;
 }
 
 .btn-delete {
 	background-color: #dc3545;
 	color: white;
+}
+
+.btn-create {
+	background-color: #007bff;
+	color: white;
+	margin-top: 15px;
 }
 
 .btn-edit:hover {
@@ -243,6 +212,11 @@ export default {
 	background-color: #c82333;
 }
 
+.btn-create:hover {
+	background-color: #0056b3;
+}
+
+/* Modal Styling */
 .modal-overlay {
 	position: fixed;
 	top: 0;
@@ -269,8 +243,7 @@ export default {
 	flex-direction: column;
 }
 
-.form-input,
-.form-select {
+.form-input {
 	padding: 10px;
 	margin-bottom: 15px;
 	border: 1px solid #ccc;
@@ -302,11 +275,29 @@ export default {
 	background-color: #5a6268;
 }
 
+/* Button Wrapper */
+.action-wrapper {
+	text-align: center;
+	margin: 20px 0;
+}
+
+.action-buttons {
+	display: flex;
+	gap: 5px;
+}
+
 .pencil-icon {
 	width: 20px;
 	height: 20px;
 	transition: transform 0.3s ease;
 }
+
+.trashcan-icon {
+	width: 20px;
+	height: 20px;
+	transition: transform 0.3s ease;
+}
+
 .btn-edit {
 	margin-left: 10px;
 	padding: 5px;
@@ -320,16 +311,20 @@ export default {
 	transition: transform 0.3s ease;
 }
 
+.btn-edit:hover {
+	background-color: #0056b3;
+}
+
+.btn-edit:hover .pencil-icon {
+	transform: scale(1.2);
+}
+
+.btn-delete:hover .trashcan-icon {
+	transform: rotateY(180deg);
+}
 .pencil-icon {
 	width: 20px;
 	height: 20px;
 	transition: transform 0.3s ease;
-}
-
-.btn-edit:hover {
-	background-color: #0056b3;
-}
-.btn-edit:hover .pencil-icon {
-	transform: scale(1.2);
 }
 </style>
