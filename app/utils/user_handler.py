@@ -26,7 +26,7 @@ class UserHandler:
         response['role'] = fetched_user.role
 
         tasks = db.query(Task).filter(
-            Task.assignee_id == user_id).limit(5).all()
+            Task.assignee_id == user_id).all()
         response['tasks'] = [{'id': task.id,
                               'code_name': task.code_name,
                               'status': task.status} for task in tasks]

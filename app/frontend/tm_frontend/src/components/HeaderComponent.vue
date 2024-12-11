@@ -6,6 +6,7 @@
 		<nav class="navigation">
 			<router-link to="/tasks/browse" class="nav-item">Home</router-link>
 			<router-link to="/administrate" class="nav-item">Admin Panel</router-link>
+			<router-link to="/analytics" class="nav-item">Analytics</router-link>
 			<router-link :to="`/users?user_id=${userId}`" class="nav-item"
 				>Profile</router-link
 			>

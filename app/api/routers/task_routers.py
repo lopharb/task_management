@@ -33,13 +33,7 @@ def create_task(task: TaskCreate, db: Session = Depends(get_db)):
 
 @router.put("/tasks/{task_id}", response_model=TaskResponse)
 def update_task(task_id: int, task: TaskCreate, db: Session = Depends(get_db)):
-    db_task = db.query(Task).filter(Task.id == task_id).first()
-    if db_task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-    for key, value in task.dict().items():
-        setattr(db_task, key, value)
-    db.commit()
-    db.refresh(db_task)
+    db_task = TaskHandler.update_task(db, task_id, task)
     return db_task
 
 

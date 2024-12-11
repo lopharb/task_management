@@ -28,8 +28,12 @@ export const fetchProfile = async (user_id) => {
 	}
 };
 
-export const fetchAllTasks = async (company_id) => {
+export const fetchAllTasks = async (company_id = null) => {
 	try {
+		if (!company_id) {
+			const response = await api.get("/tasks"); // Adjust the endpoint as needed
+			return response.data;
+		}
 		const response = await api.get(`/tasks?company_id=${company_id}`); // Adjust the endpoint as needed
 		return response.data;
 	} catch (error) {

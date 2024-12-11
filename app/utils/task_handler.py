@@ -106,6 +106,15 @@ class TaskHandler:
             raise ValueError("Task not found")
         for key, value in task.model_dump().items():
             setattr(db_task, key, value)
+        if db_task.status == "DONE":
+            for dependent_task in db.query(TaskDependency).filter(TaskDependency.dependent_task_id == task_id).all():
+                child_task_update = TaskCreate(code_name=dependent_task.task.code_name,
+                                               status="DONE",
+                                               creator_id=dependent_task.task.creator_id,
+                                               assignee_id=dependent_task.task.assignee_id,
+                                               description=dependent_task.task.description)
+                TaskHandler.update_task(
+                    db, dependent_task.task_id, child_task_update)
         db.commit()
         db.refresh(db_task)
         return db_task

@@ -6,6 +6,7 @@ import LoginPage from "@/components/LoginPage.vue";
 import RegisterPage from "@/components/RegisterPage.vue";
 import Landing from "@/components/Landing.vue";
 import AdminPanel from "@/components/AdminPanel.vue";
+import TaskAnalytics from "@/components/TaskAnalytics.vue";
 const routes = [
 	{
 		path: "/",
@@ -41,6 +42,11 @@ const routes = [
 		path: "/administrate",
 		name: "AdminPanel",
 		component: AdminPanel,
+	},
+	{
+		path: "/analytics",
+		name: "TaskAnalytics",
+		component: TaskAnalytics,
 	},
 ];
 
