@@ -15,7 +15,12 @@
 			<!-- Toggle Button for User Filter -->
 			<label class="user-filter">
 				<input type="checkbox" v-model="filterByCurrentUser" class="checkbox" />
-				<span>Show My Tasks Only</span>
+				<span>My Tasks Only</span>
+			</label>
+			<!-- Toggle Button for Epic Tasks Filter -->
+			<label class="user-filter">
+				<input type="checkbox" v-model="filterEpics" class="checkbox" />
+				<span>Epics Only</span>
 			</label>
 		</div>
 		<div v-for="task in filteredTasks" :key="task.code_name" class="task-item">
@@ -139,6 +144,7 @@ export default {
 			currentTask: null,
 			searchQuery: "",
 			filterByCurrentUser: false,
+			filterEpics: false,
 		};
 	},
 	components: {
@@ -156,8 +162,9 @@ export default {
 				const matchesUser =
 					!this.filterByCurrentUser ||
 					task.assignee_id == Cookies.get("user_id");
+				const matchesEpic = !this.filterEpics || task.parent_tasks.length === 0;
 
-				return matchesSearch && matchesUser;
+				return matchesSearch && matchesUser && matchesEpic;
 			});
 		},
 	},
