@@ -92,7 +92,12 @@ export default {
 
 <style scoped>
 .register-container {
-	max-width: 400px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 30%;
+	max-width: 800px;
 	margin: 0 auto;
 	padding: 20px;
 	border: 1px solid #ddd;

@@ -1,72 +1,107 @@
 <template>
+	<header>
+		<HeaderComponent />
+	</header>
 	<div class="task-detail">
-		<h2>{{ task.code_name }}</h2>
-		<p><strong>Description:</strong> {{ task.description }}</p>
-		<p><strong>Status:</strong> {{ task.status }}</p>
+		<h2 class="task-title">{{ task.code_name }}</h2>
+		<p class="task-description">
+			<strong>Description:</strong> {{ task.description }}
+		</p>
+		<p>
+			<strong>Status:</strong>
+			<span :class="`status ${task.status.toLowerCase().replace(' ', '-')}`">{{
+				task.status
+			}}</span>
+		</p>
 		<p><strong>Tracked Time:</strong> {{ task.tracked_time }}</p>
 		<p>
 			<strong>Assignee:</strong>
-			<a :href="`/users?user_id=${task.assignee_id}`">
+			<a :href="`/users?user_id=${task.assignee_id}`" class="link">
 				{{ task.assignee }}
 			</a>
 		</p>
 		<p><strong>Creator:</strong> {{ task.creator }}</p>
 
-		<ul>
+		<section class="task-relations">
 			<h3>Parent Tasks</h3>
-			<li v-for="parent in task.parent_tasks" :key="parent.id">
-				<a :href="`/tasks?task_id=${parent.id}`">
-					{{ parent.code_name }}
-				</a>
-				<span>(Status: {{ parent.status }})</span>
-			</li>
-		</ul>
+			<ul class="child-list">
+				<li
+					v-for="child in task.parent_tasks"
+					:key="child.id"
+					class="child-item"
+				>
+					<div class="child-details">
+						<a :href="`/tasks?task_id=${child.id}`" class="child-link">
+							{{ child.code_name }}
+						</a>
+					</div>
+					<div class="child-status" :style="getStatusStyle(child.status)">
+						{{ child.status }}
+					</div>
+				</li>
+			</ul>
 
-		<ul>
 			<h3>Child Tasks</h3>
-			<li v-for="child in task.child_tasks" :key="child.id">
-				<a :href="`/tasks?task_id=${child.id}`">
-					{{ child.code_name }}
-				</a>
-				<span>(Status: {{ child.status }})</span>
-			</li>
-		</ul>
+			<ul class="child-list">
+				<li
+					v-for="child in task.child_tasks"
+					:key="child.id"
+					class="child-item"
+				>
+					<div class="child-details">
+						<a :href="`/tasks?task_id=${child.id}`" class="child-link">
+							{{ child.code_name }}
+						</a>
+					</div>
+					<div class="child-status" :style="getStatusStyle(child.status)">
+						{{ child.status }}
+					</div>
+				</li>
+			</ul>
+		</section>
 
-		<h3 class="worklog-title">Logged Work</h3>
-		<div class="worklog-list">
-			<div v-for="worklog in worklogs" :key="worklog.id" class="worklog-item">
-				<div class="worklog-time">
-					{{
-						`[${Math.floor(worklog.time_spent / 60)
-							.toString()
-							.padStart(2, "0")}:${(worklog.time_spent % 60)
-							.toString()
-							.padStart(2, "0")}]`
-					}}
+		<section class="worklog-section">
+			<h3>Logged Work</h3>
+			<div class="worklog-list">
+				<div v-for="worklog in worklogs" :key="worklog.id" class="worklog-item">
+					<div class="worklog-time">
+						{{
+							`[${Math.floor(worklog.time_spent / 60)
+								.toString()
+								.padStart(2, "0")}:${(worklog.time_spent % 60)
+								.toString()
+								.padStart(2, "0")}]`
+						}}
+					</div>
+					<div class="worklog-description">
+						<p>{{ worklog.description }}</p>
+					</div>
+					<p class="worklog-author">
+						by
+						<a :href="`/users?user_id=${worklog.assignee_id}`" class="link">
+							{{ worklog.assignee.name }}
+						</a>
+					</p>
+					<button class="btn-delete" @click.stop="deleteWorklogL(worklog)">
+						<img
+							src="@/assets/trashcan.png"
+							alt="Delete Worklog"
+							class="trashcan-icon"
+						/>
+					</button>
 				</div>
-				<div class="worklog-description">
-					<p>{{ worklog.description }}</p>
-				</div>
-				<p class="worklog-author">
-					by
-					<a :href="`/users?user_id=${worklog.assignee_id}`">
-						{{ worklog.assignee.name }}
-					</a>
-				</p>
-				<button class="btn-delete" @click.stop="deleteWorklogL(worklog)">
-					<img
-						src="@/assets/trashcan.png"
-						alt="Delete Task"
-						class="trashcan-icon"
-					/>
-				</button>
 			</div>
-		</div>
+		</section>
 	</div>
+	<footer>
+		<FooterComponent />
+	</footer>
 </template>
 
 <script>
 import { getWorklogs, deleteWorklog } from "@/services/api";
+import HeaderComponent from "./HeaderComponent.vue";
+import FooterComponent from "./FooterComponent.vue";
 
 export default {
 	name: "TaskDetail",
@@ -82,76 +117,132 @@ export default {
 		};
 	},
 	methods: {
-		goToTask(task) {
-			this.$router.push(`/tasks?task_id=${task.id}`);
-		},
 		async fetchWorklogs() {
 			this.worklogs = await getWorklogs(this.task.id);
 		},
-
 		async deleteWorklogL(worklog) {
-			if (confirm(`Are you sure you want to delete the worklog?`)) {
+			if (confirm(`Are you sure you want to delete this worklog?`)) {
 				try {
 					await deleteWorklog(worklog.id);
-					this.worklogs = this.worklgetStatusStyleogs.filter(
-						(t) => t.id !== worklog.id
-					);
+					this.worklogs = this.worklogs.filter((w) => w.id !== worklog.id);
 				} catch (error) {
-					console.error("Failed to delete the task:", error);
-					alert("Failed to delete the task. Please try again.");
+					alert("Failed to delete the worklog. Please try again.");
 				}
+			}
+		},
+		getStatusStyle(status) {
+			switch (status) {
+				case "TO DO":
+					return {
+						color: "#6c757d",
+						backgroundColor: "#f2f2f2",
+						borderRadius: "20px",
+						padding: "5px 10px",
+					};
+				case "IN PROGRESS":
+					return {
+						color: "#007bff",
+						backgroundColor: "rgba(0, 123, 255, 0.1)",
+						borderRadius: "20px",
+						padding: "5px 10px",
+					};
+				case "DONE":
+					return {
+						color: "#28a745",
+						backgroundColor: "rgba(40, 167, 69, 0.1)",
+						borderRadius: "20px",
+						padding: "5px 10px",
+					};
+				default:
+					return {};
 			}
 		},
 	},
 	async created() {
 		await this.fetchWorklogs();
 	},
+	components: {
+		HeaderComponent,
+		FooterComponent,
+	},
 };
 </script>
 
-<style>
+<style scoped>
 .task-detail {
-	width: 80%;
-	max-width: 600px;
-	border: 1px solid #ddd;
-	padding: 16px;
-	border-radius: 8px;
-	margin: 16px auto;
-	background-color: #f9f9f9;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	transition: transform 0.2s;
+	width: 85%;
+	max-width: 800px;
+	margin: 20px auto;
+	padding: 20px;
+	background-color: #ffffff;
+	border-radius: 10px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-.task-detail:hover {
-	transform: scale(1.01);
-}
-.task-detail h2,
-.task-detail p {
-	color: #333;
+
+.task-title {
+	font-size: 2rem;
 	font-weight: bold;
-	margin: 0 0 8px;
+	color: #2c3e50;
+	margin-bottom: 15px;
 }
-.task-detail h3 {
-	color: #555;
-	margin: 16px 0 8px;
+
+.task-description {
+	font-size: 1rem;
+	color: #34495e;
+	margin-bottom: 15px;
 }
-.task-detail ul {
-	list-style-type: none;
-	padding-left: 0;
+
+.status {
+	padding: 5px 10px;
+	border-radius: 12px;
+	font-size: 0.9rem;
+	color: #fff;
+	display: inline-block;
 }
-.task-detail li {
-	padding: 8px 0;
-	border-bottom: 1px solid #eee;
+
+.status.to-do {
+	background-color: #6c757d;
 }
-.task-detail li:last-child {
-	border-bottom: none;
+
+.status.in-progress {
+	background-color: #007bff;
 }
-.task-detail li:nth-child(odd) {
-	background-color: #fcfcfc;
+
+.status.done {
+	background-color: #28a745;
 }
-.worklog-title {
-	font-size: 24px;
-	margin-bottom: 20px;
-	color: #333;
+
+.link {
+	color: #007bff;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+.link:hover {
+	text-decoration: underline;
+}
+
+.task-relations h3 {
+	font-size: 1.25rem;
+	color: #2c3e50;
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+
+.task-relations ul {
+	padding: 0;
+	list-style: none;
+}
+
+.task-relations li {
+	margin-bottom: 8px;
+	color: #34495e;
+}
+
+.worklog-section h3 {
+	font-size: 1.5rem;
+	margin: 20px 0 15px;
+	color: #2c3e50;
 }
 
 .worklog-list {
@@ -160,59 +251,116 @@ export default {
 }
 
 .worklog-item {
-	margin-bottom: 10px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-	border-radius: 8px;
-	background-color: white;
-	padding: 10px;
 	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px;
+	margin-bottom: 10px;
+	border-radius: 8px;
+	background-color: #f8f9fa;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .worklog-time {
-	font-size: 18px;
-	margin-right: 10px;
-	flex: 0 0 50px;
+	font-size: 1rem;
+	color: #555;
+	margin-right: 15px;
 }
 
 .worklog-description {
 	flex-grow: 1;
-	text-align: left;
+	font-size: 0.95rem;
+	color: #2c3e50;
 }
 
 .worklog-author {
-	margin-top: 200px;
-	color: #555;
-	font-size: 14px;
-	display: block;
+	font-size: 0.85rem;
+	color: #777;
 	text-align: right;
+	margin-left: 10px;
 }
 
 .btn-delete {
-	margin-left: 10px;
-	width: 30px;
-	height: 30px;
-	padding: 0;
-	background-color: #dc3545;
+	background: #e74c3c;
 	border: none;
+	color: white;
 	border-radius: 4px;
+	padding: 6px;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
-	justify-content: center;
-	transition: transform 0.3s ease;
-}
-
-.trashcan-icon {
-	width: 20px;
-	height: 20px;
-	transition: transform 0.3s ease;
 }
 
 .btn-delete:hover {
-	background-color: #c82333;
+	background: #c0392b;
 }
 
-.btn-delete:hover .trashcan-icon {
-	transform: rotateY(180deg);
+.trashcan-icon {
+	width: 16px;
+	height: 16px;
+}
+
+p {
+	margin: 8px 0;
+	color: #495057;
+	font-size: 1rem;
+}
+
+/* Tasks section */
+.child-section {
+	margin-top: 20px;
+}
+
+.section-title {
+	font-size: 1.5rem;
+	font-weight: bold;
+	margin-bottom: 15px;
+	color: #343a40;
+}
+
+.child-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.child-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 15px;
+	margin-bottom: 10px;
+	background-color: #ffffff;
+	border-radius: 8px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+	transition: transform 0.2s ease;
+}
+
+.child-item:hover {
+	transform: scale(1.02);
+}
+
+.child-details {
+	font-size: 1.1rem;
+	font-weight: 500;
+	color: #007bff;
+}
+
+.child-link {
+	text-decoration: none;
+	color: #007bff;
+}
+
+.child-link:hover {
+	text-decoration: underline;
+}
+
+/* Status styles */
+.child-status {
+	font-size: 0.9rem;
+	font-weight: bold;
+	text-align: center;
+	min-width: 80px;
+	text-transform: uppercase;
 }
 </style>

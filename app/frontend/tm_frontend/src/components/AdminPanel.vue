@@ -1,4 +1,7 @@
 <template>
+	<header>
+		<HeaderComponent />
+	</header>
 	<div class="admin-panel">
 		<header>
 			<h1>Administration Panel</h1>
@@ -29,7 +32,7 @@
 <script>
 import UserManagement from "./UserManagement.vue";
 import CompanyManagement from "./CompanyManagement.vue";
-
+import HeaderComponent from "./HeaderComponent.vue";
 export default {
 	name: "AdminPanel",
 	data() {
@@ -41,6 +44,7 @@ export default {
 	components: {
 		UserManagement,
 		CompanyManagement,
+		HeaderComponent,
 	},
 };
 </script>

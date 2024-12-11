@@ -230,17 +230,8 @@ export default {
 	color: white;
 }
 
-.btn-delete {
-	background-color: #dc3545;
-	color: white;
-}
-
 .btn-edit:hover {
 	background-color: #218838;
-}
-
-.btn-delete:hover {
-	background-color: #c82333;
 }
 
 .modal-overlay {
@@ -331,5 +322,33 @@ export default {
 }
 .btn-edit:hover .pencil-icon {
 	transform: scale(1.2);
+}
+.btn-delete {
+	margin-left: 10px;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	background-color: #dc3545;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 0.3s ease;
+}
+
+.trashcan-icon {
+	width: 20px;
+	height: 20px;
+	transition: transform 0.3s ease;
+}
+
+.btn-delete:hover {
+	background-color: #c82333;
+}
+
+.btn-delete:hover .trashcan-icon {
+	transform: rotateY(180deg);
 }
 </style>

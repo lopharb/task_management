@@ -22,13 +22,13 @@ class TaskResponseComplex(BaseModel):
     code_name: str
     description: str
     status: str
-    tracked_time: Optional[str]  # Time spent tracked in minutes
-    assignee_id: Optional[int]    # Assignee ID
-    assignee: Optional[str]       # Assignee name
+    tracked_time: Optional[str]
+    assignee_id: Optional[int]
+    assignee: Optional[str]
     creator: Optional[str]
-    creator_id: Optional[int]      # Creator name
-    parent_tasks: List[dict]      # List of parent tasks as dictionaries
-    child_tasks: List[dict]       # List of child tasks as dictionaries
+    creator_id: Optional[int]
+    parent_tasks: List[dict]
+    child_tasks: List[dict]
 
     class ParentTask(BaseModel):
         id: int

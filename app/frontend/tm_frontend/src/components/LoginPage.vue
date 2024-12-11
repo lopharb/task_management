@@ -51,8 +51,12 @@ export default {
 
 <style scoped>
 .login-container {
-	max-width: 400px;
-	margin: 0 auto;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 30%;
+	max-width: 800px;
 	padding: 20px;
 	border: 1px solid #ddd;
 	border-radius: 8px;
@@ -76,7 +80,7 @@ label {
 }
 
 input {
-	width: 95%;
+	width: 96.5%;
 	padding: 10px;
 	border: 1px solid #ccc;
 	border-radius: 4px;

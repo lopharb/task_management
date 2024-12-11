@@ -298,6 +298,11 @@ export default {
 	transition: transform 0.3s ease;
 }
 
+.pencil-icon {
+	width: 20px;
+	height: 20px;
+	transition: transform 0.3s ease;
+}
 .btn-edit {
 	margin-left: 10px;
 	padding: 5px;
@@ -311,20 +316,44 @@ export default {
 	transition: transform 0.3s ease;
 }
 
-.btn-edit:hover {
-	background-color: #0056b3;
-}
-
-.btn-edit:hover .pencil-icon {
-	transform: scale(1.2);
-}
-
-.btn-delete:hover .trashcan-icon {
-	transform: rotateY(180deg);
-}
 .pencil-icon {
 	width: 20px;
 	height: 20px;
 	transition: transform 0.3s ease;
+}
+
+.btn-edit:hover {
+	background-color: #0056b3;
+}
+.btn-edit:hover .pencil-icon {
+	transform: scale(1.2);
+}
+.btn-delete {
+	margin-left: 10px;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	background-color: #dc3545;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 0.3s ease;
+}
+
+.trashcan-icon {
+	width: 20px;
+	height: 20px;
+	transition: transform 0.3s ease;
+}
+
+.btn-delete:hover {
+	background-color: #c82333;
+}
+
+.btn-delete:hover .trashcan-icon {
+	transform: rotateY(180deg);
 }
 </style>

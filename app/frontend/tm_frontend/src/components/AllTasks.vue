@@ -1,8 +1,8 @@
 <template>
+	<header>
+		<HeaderComponent />
+	</header>
 	<div class="task-list">
-		<header>
-			<CurrentUserFlair />
-		</header>
 		<h1 style="text-align: left">Task List</h1>
 		<!-- Search Bar -->
 		<div class="search-container">
@@ -22,6 +22,10 @@
 				<input type="checkbox" v-model="filterEpics" class="checkbox" />
 				<span>Epics Only</span>
 			</label>
+			<!-- Toggle button for TaskCreate -->
+			<button @click="toggleTaskCreate" class="btn-toggle">
+				{{ showTaskCreate ? "Hide Creation" : "New Task" }}
+			</button>
 		</div>
 		<div v-for="task in filteredTasks" :key="task.code_name" class="task-item">
 			<div class="task-header" @click="toggleCollapse(task.code_name)">
@@ -104,11 +108,6 @@
 			@close="closeTimeTracker"
 		/>
 
-		<!-- Toggle button for TaskCreate -->
-		<button @click="toggleTaskCreate" class="btn-toggle">
-			{{ showTaskCreate ? "Hide Task Creation" : "Create New Task" }}
-		</button>
-
 		<!-- TaskCreate Component as an Overlay -->
 		<TaskCreate
 			v-if="showTaskCreate"
@@ -118,6 +117,9 @@
 			@task-created="fetchTasks"
 		/>
 	</div>
+	<footer>
+		<FooterComponent />
+	</footer>
 </template>
 
 <script>
@@ -127,9 +129,10 @@ import {
 	deleteTask,
 	fetchProfile,
 } from "@/services/api";
-import CurrentUserFlair from "./CurrentUserFlair.vue";
 import TaskCreate from "./TaskCreate.vue";
 import TimeTracker from "./TimeTracker.vue";
+import HeaderComponent from "./HeaderComponent.vue";
+import FooterComponent from "./FooterComponent.vue";
 import Cookies from "js-cookie";
 
 export default {
@@ -148,9 +151,10 @@ export default {
 		};
 	},
 	components: {
-		CurrentUserFlair,
+		HeaderComponent,
 		TaskCreate,
 		TimeTracker,
+		FooterComponent,
 	},
 	computed: {
 		filteredTasks() {
@@ -297,6 +301,10 @@ export default {
 	margin-bottom: 10px;
 	overflow: hidden;
 	text-align: left;
+	transition: transform 0.2s ease;
+}
+.task-item:hover {
+	transform: scale(1.02);
 }
 
 .task-header {
@@ -322,8 +330,8 @@ export default {
 	font-weight: bold;
 	cursor: pointer;
 	position: relative;
-	padding: 5px;
-	border-radius: 4px;
+	padding: 5px 10px;
+	border-radius: 20px;
 }
 
 .btn-time-track {
@@ -491,7 +499,7 @@ a {
 .search-bar {
 	width: 60%;
 	padding: 10px;
-	margin-bottom: 15px;
+	/* margin-bottom: 15px; */
 	border: 1px solid #ddd;
 	border-radius: 4px;
 	font-size: 16px;
@@ -500,6 +508,7 @@ a {
 	display: flex;
 	align-items: center;
 	margin-bottom: 15px;
+	justify-content: space-between;
 }
 
 .user-filter {
@@ -516,7 +525,7 @@ a {
 
 .user-filter span {
 	font-size: 14px;
-	color: #333;
+	color: #aaa;
 }
 
 .btn-edit {
