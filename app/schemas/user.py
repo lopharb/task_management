@@ -1,31 +1,33 @@
-from sqlalchemy import ForeignKey, Column, Integer, String
-from sqlalchemy.orm import relationship
-from app.schemas.base import Base
-
-class Role(Base):
-    __tablename__ = 'roles'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    role_name = Column(String(50))
-
-    def __repr__(self):
-        return f"Role(id={self.id}, role_name='{self.role_name}')"
+from pydantic import BaseModel
+from typing import Union
 
 
-class Company(Base):
-    __tablename__ = 'companies'
-    id = Column(Integer, primary_key=True)
-    company_name = Column(String(50))
+class UserCreate(BaseModel):
+    name: str
+    role_id: Union[int, str]
+    company_id: int
+    email: str
+    password_hash: str
 
 
-class User(Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50))
-    role_id = Column(Integer, ForeignKey('roles.id'))
-    role = relationship('Role', backref='users')
-    company_id = Column(Integer, ForeignKey('companies.id'))
-    company = relationship('Company', backref='employees')
-    email = Column(String(50))
+class UserUpdate(BaseModel):
+    name: str
+    role_id: Union[int, str]
+    company_id: int
+    email: str
 
-    def __repr__(self):
-        return f"User(id={self.id}, name='{self.name}', role_id={self.role_id})"
+
+class UserResponse(BaseModel):
+    id: int
+    email: str
+    name: str
+    role_id: int
+    company_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class UserLogin(BaseModel):
+    email: str
+    password: str

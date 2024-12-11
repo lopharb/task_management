@@ -1,46 +1,51 @@
-from sqlalchemy import ForeignKey, Column, Integer, String
-from sqlalchemy.orm import relationship
-from app.schemas.base import Base
-
-class Task(Base):
-    __tablename__ = 'tasks'
-    id = Column(Integer, primary_key=True)
-    code_name = Column(String(50))
-    creator_id = Column(Integer, ForeignKey('users.id'))
-    creator = relationship('User', foreign_keys=[
-                           creator_id], backref='created tasks')
-    assignee_id = Column(Integer, ForeignKey('users.id'))
-    assignee = relationship('User', foreign_keys=[
-                            assignee_id], backref='assigned_tasks')
-    status = Column(String(50))
-    time_spent = Column(Integer)
-
-    def __repr__(self):
-        return f"Task(id={self.id}, code_name='{self.code_name}', creator_id={self.creator_id}, assignee_id={self.assignee_id}, status='{self.status}', time_spent={self.time_spent})"
+from typing import List, Optional
+from pydantic import BaseModel
 
 
-class TaskDependency(Base):
-    __tablename__ = 'task_dependencies'
-    task_id = Column(Integer, ForeignKey('tasks.id'), primary_key=True)
-    dependent_task_id = Column(
-        Integer, ForeignKey('tasks.id'), primary_key=True)
-    task = relationship('Task', foreign_keys=[task_id], backref='parent_tasks')
-    dependent_task = relationship('Task', foreign_keys=[
-                                  dependent_task_id], backref='dependent_on')
+class TaskCreate(BaseModel):
+    code_name: str
+    creator_id: int
+    assignee_id: int
+    status: str
+    description: str
 
-    def __repr__(self):
-        return f"TaskDependency(task_id={self.task_id}, dependent_task_id={self.dependent_task_id})"
 
-class WorkLog(Base):
-    __tablename__ = 'work_logs'
-    id = Column(Integer, primary_key=True)
-    assignee_id = Column(Integer, ForeignKey('users.id'))
-    assignee = relationship('User', foreign_keys=[
-                            assignee_id], backref='work_logs')
-    task_id = Column(Integer, ForeignKey('tasks.id'))
-    task = relationship('Task', backref='work_logs')
-    description = Column(String(50))
-    time_spent = Column(Integer)
+class TaskResponse(TaskCreate):
+    id: int
 
-    def __repr__(self):
-        return f"WorkLog(id={self.id}, assignee_id={self.assignee_id}, task_id={self.task_id}, description='{self.description}', time_spent={self.time_spent})"
+    class Config:
+        orm_mode = True
+
+
+class TaskResponseComplex(BaseModel):
+    id: int
+    code_name: str
+    description: str
+    status: str
+    tracked_time: Optional[str]
+    assignee_id: Optional[int]
+    assignee: Optional[str]
+    creator: Optional[str]
+    creator_id: Optional[int]
+    parent_tasks: List[dict]
+    child_tasks: List[dict]
+
+    class ParentTask(BaseModel):
+        id: int
+        code_name: str
+        status: str
+
+    class ChildTask(BaseModel):
+        id: int
+        code_name: str
+        status: str
+
+    def add_parent_task(self, code_name: str, status: str, id: int):
+        parent_task = self.ParentTask(
+            code_name=code_name, status=status, id=id)
+        self.parent_tasks.append(parent_task.dict())
+
+    def add_child_task(self, code_name: str, status: str, id: int):
+        child_task = self.ChildTask(
+            code_name=code_name, status=status, id=id)
+        self.child_tasks.append(child_task.dict())
