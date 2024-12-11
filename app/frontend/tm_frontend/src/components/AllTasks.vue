@@ -301,10 +301,6 @@ export default {
 	margin-bottom: 10px;
 	overflow: hidden;
 	text-align: left;
-	transition: transform 0.2s ease;
-}
-.task-item:hover {
-	transform: scale(1.02);
 }
 
 .task-header {
@@ -332,8 +328,12 @@ export default {
 	position: relative;
 	padding: 5px 10px;
 	border-radius: 20px;
+	transition: transform 0.2s ease;
 }
 
+.status:hover {
+	transform: scale(1.05);
+}
 .btn-time-track {
 	margin-left: 10px;
 	padding: 5px;
@@ -352,7 +352,9 @@ export default {
 	height: 20px;
 	transition: transform 0.3s ease;
 }
-
+.btn-time-track:hover {
+	transform: scale(1.05);
+}
 .btn-time-track:hover .hourglass-icon {
 	transform: rotateZ(180deg);
 }
@@ -490,6 +492,7 @@ a {
 
 .btn-delete:hover {
 	background-color: #c82333;
+	transform: scale(1.05);
 }
 
 .btn-delete:hover .trashcan-icon {
@@ -549,6 +552,7 @@ a {
 
 .btn-edit:hover {
 	background-color: #0056b3;
+	transform: scale(1.05);
 }
 
 .btn-edit:hover .pencil-icon {
